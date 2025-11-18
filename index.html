@@ -14,19 +14,29 @@
             box-sizing: border-box;
         }
 
+        :root {
+            --primary: #667eea;
+            --primary-dark: #764ba2;
+            --success: #10b981;
+            --danger: #ef4444;
+            --warning: #f59e0b;
+            --bg-glass: rgba(255,255,255,0.1);
+            --bg-glass-solid: rgba(255,255,255,0.15);
+        }
+
         body {
             font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
             color: #fff;
             min-height: 100vh;
             padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
-            overflow-x: hidden;
         }
 
         .container {
             max-width: 480px;
             margin: 0 auto;
             padding: 20px;
+            padding-bottom: 80px;
         }
 
         h1 {
@@ -36,8 +46,46 @@
             text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
         }
 
+        /* Tabs */
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+            background: var(--bg-glass);
+            padding: 5px;
+            border-radius: 12px;
+            backdrop-filter: blur(10px);
+        }
+
+        .tab {
+            flex: 1;
+            padding: 12px;
+            border: none;
+            background: transparent;
+            color: rgba(255,255,255,0.7);
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 8px;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            background: rgba(255,255,255,0.2);
+            color: #fff;
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        /* Status */
         .status {
-            background: rgba(255,255,255,0.1);
+            background: var(--bg-glass);
             padding: 15px;
             border-radius: 10px;
             margin-bottom: 20px;
@@ -53,34 +101,21 @@
             animation: pulse 2s ease-in-out infinite;
         }
 
-        .status-indicator.disconnected {
-            background: #e74c3c;
-        }
-
-        .status-indicator.connecting {
-            background: #f39c12;
-        }
-
-        .status-indicator.connected {
-            background: #2ecc71;
-        }
+        .status-indicator.disconnected { background: var(--danger); }
+        .status-indicator.connecting { background: var(--warning); }
+        .status-indicator.connected { background: var(--success); }
 
         @keyframes pulse {
             0%, 100% { opacity: 1; }
             50% { opacity: 0.5; }
         }
 
-        .controls {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
+        /* Controls */
         .control-group {
-            background: rgba(255,255,255,0.1);
+            background: var(--bg-glass);
             padding: 15px;
             border-radius: 10px;
+            margin-bottom: 15px;
             backdrop-filter: blur(10px);
         }
 
@@ -107,15 +142,16 @@
             min-height: 80px;
         }
 
-        .button-row {
-            display: flex;
-            gap: 10px;
-            flex-wrap: wrap;
+        .info-text {
+            font-size: 12px;
+            opacity: 0.8;
+            margin-top: 5px;
+            line-height: 1.4;
         }
 
+        /* Buttons */
         button {
-            flex: 1;
-            min-width: 140px;
+            width: 100%;
             padding: 15px 20px;
             border: none;
             border-radius: 10px;
@@ -123,7 +159,7 @@
             font-weight: 600;
             cursor: pointer;
             transition: all 0.3s;
-            background: rgba(255,255,255,0.2);
+            background: var(--bg-glass-solid);
             color: #fff;
             backdrop-filter: blur(10px);
             touch-action: manipulation;
@@ -138,72 +174,42 @@
             cursor: not-allowed;
         }
 
-        .btn-primary {
-            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        .btn-primary { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); }
+        .btn-success { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
+        .btn-danger { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
+        .btn-warning { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+
+        .button-row {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 15px;
         }
 
-        .btn-success {
-            background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+        .button-row button {
+            flex: 1;
         }
 
-        .btn-danger {
-            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
-        }
-
-        .btn-warning {
-            background: linear-gradient(135deg, #f2994a 0%, #f2c94c 100%);
-        }
-
-        .btn-info {
-            background: linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%);
-        }
-
+        /* Push to Talk */
         .ptt-button {
-            width: 100%;
             height: 100px;
             font-size: 20px;
             margin: 20px 0;
         }
 
         .ptt-button.active {
-            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
-            box-shadow: 0 0 30px rgba(235, 51, 73, 0.8);
+            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
+            box-shadow: 0 0 30px rgba(239, 68, 68, 0.8);
         }
 
-        .settings-toggle {
-            width: 100%;
-            margin-bottom: 15px;
-        }
-
-        .settings-panel {
-            display: none;
-            background: rgba(255,255,255,0.1);
-            padding: 20px;
-            border-radius: 10px;
-            backdrop-filter: blur(10px);
-            margin-bottom: 20px;
-            max-height: 60vh;
-            overflow-y: auto;
-        }
-
-        .settings-panel.open {
-            display: block;
-        }
-
+        /* Settings Sections */
         .settings-section {
             margin-bottom: 20px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid rgba(255,255,255,0.2);
-        }
-
-        .settings-section:last-child {
-            border-bottom: none;
         }
 
         .settings-section h3 {
             margin-bottom: 15px;
             font-size: 16px;
-            color: #f2c94c;
+            color: #fbbf24;
         }
 
         .setting-item {
@@ -217,7 +223,8 @@
             opacity: 0.9;
         }
 
-        .setting-item input[type="range"] {
+        /* Range Inputs */
+        input[type="range"] {
             -webkit-appearance: none;
             appearance: none;
             background: rgba(255,255,255,0.3);
@@ -225,7 +232,7 @@
             border-radius: 3px;
         }
 
-        .setting-item input[type="range"]::-webkit-slider-thumb {
+        input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
             width: 20px;
@@ -236,7 +243,7 @@
             box-shadow: 0 2px 4px rgba(0,0,0,0.2);
         }
 
-        .setting-item input[type="range"]::-moz-range-thumb {
+        input[type="range"]::-moz-range-thumb {
             width: 20px;
             height: 20px;
             border-radius: 50%;
@@ -250,9 +257,10 @@
             display: inline-block;
             margin-left: 10px;
             font-weight: 600;
-            color: #f2c94c;
+            color: #fbbf24;
         }
 
+        /* Checkbox */
         .checkbox-item {
             display: flex;
             align-items: center;
@@ -262,15 +270,25 @@
         .checkbox-item input[type="checkbox"] {
             width: auto;
             height: 20px;
-            accent-color: #667eea;
+            accent-color: var(--primary);
         }
 
+        .checkbox-item label {
+            margin: 0 !important;
+        }
+
+        /* Video */
         .video-container {
             background: rgba(0,0,0,0.3);
             border-radius: 10px;
             overflow: hidden;
             margin-bottom: 20px;
             position: relative;
+            display: none;
+        }
+
+        .video-container.active {
+            display: block;
         }
 
         video {
@@ -290,36 +308,47 @@
         }
 
         .video-controls button {
-            flex: 1;
-            min-width: auto;
             padding: 8px;
             font-size: 14px;
         }
 
-        .info-text {
-            font-size: 12px;
-            opacity: 0.8;
-            margin-top: 5px;
+        /* Collapsible sections */
+        .collapsible-header {
+            background: var(--bg-glass-solid);
+            padding: 12px 15px;
+            border-radius: 8px;
+            cursor: pointer;
+            margin-bottom: 10px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
 
-        .hidden {
-            display: none !important;
+        .collapsible-header:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        .collapsible-content {
+            display: none;
+            padding-bottom: 10px;
+        }
+
+        .collapsible-content.open {
+            display: block;
+        }
+
+        .collapse-icon {
+            transition: transform 0.3s;
+        }
+
+        .collapse-icon.open {
+            transform: rotate(180deg);
         }
 
         @media (max-width: 400px) {
-            .container {
-                padding: 15px;
-            }
-
-            h1 {
-                font-size: 20px;
-            }
-
-            button {
-                min-width: 100px;
-                padding: 12px 15px;
-                font-size: 14px;
-            }
+            .container { padding: 15px; padding-bottom: 80px; }
+            h1 { font-size: 20px; }
+            button { padding: 12px 15px; font-size: 14px; }
         }
     </style>
 </head>
@@ -332,223 +361,27 @@
             <span id="statusText">Disconnected</span>
         </div>
 
-        <div class="controls">
+        <!-- Tabs -->
+        <div class="tabs">
+            <button class="tab active" onclick="switchTab('chat')">Chat</button>
+            <button class="tab" onclick="switchTab('settings')">Settings</button>
+        </div>
+
+        <!-- Chat Tab -->
+        <div class="tab-content active" id="chatTab">
             <div class="control-group">
                 <label for="apiKey">OpenAI API Key</label>
                 <input type="password" id="apiKey" placeholder="sk-...">
                 <div class="info-text">
-                    ⚠️ Security Warning: Your API key is stored in browser localStorage and sent directly to OpenAI.
-                    This is convenient for testing but NOT recommended for production.
-                    For production apps, generate ephemeral tokens from your server.
+                    Stored locally. For production, use ephemeral tokens from your server.
                 </div>
             </div>
 
-            <button class="settings-toggle btn-info" onclick="toggleSettings()">
-                <span id="settingsToggleText">Show Settings</span>
-            </button>
-
-            <div class="settings-panel" id="settingsPanel">
-                <!-- Model & Voice Settings -->
-                <div class="settings-section">
-                    <h3>Model & Voice</h3>
-                    <div class="setting-item">
-                        <label for="model">Model</label>
-                        <select id="model">
-                            <option value="gpt-4o-realtime-preview">gpt-4o-realtime-preview</option>
-                            <option value="gpt-4o-realtime-preview-2024-10-01">gpt-4o-realtime-preview-2024-10-01</option>
-                            <option value="gpt-4o-realtime-preview-2024-12-17" selected>gpt-4o-realtime-preview-2024-12-17</option>
-                        </select>
-                    </div>
-                    <div class="setting-item">
-                        <label for="voice">Voice</label>
-                        <select id="voice">
-                            <option value="alloy">Alloy</option>
-                            <option value="ash">Ash</option>
-                            <option value="ballad">Ballad</option>
-                            <option value="coral">Coral</option>
-                            <option value="echo">Echo</option>
-                            <option value="sage">Sage</option>
-                            <option value="shimmer" selected>Shimmer</option>
-                            <option value="verse">Verse</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- System Instructions -->
-                <div class="settings-section">
-                    <h3>System Instructions</h3>
-                    <div class="setting-item">
-                        <label for="instructions">System Prompt</label>
-                        <textarea id="instructions" placeholder="You are a helpful assistant...">You are a helpful assistant. Be concise and friendly.</textarea>
-                    </div>
-                </div>
-
-                <!-- Audio Settings -->
-                <div class="settings-section">
-                    <h3>Audio Settings</h3>
-                    <div class="setting-item">
-                        <label for="inputAudioFormat">Input Audio Format</label>
-                        <select id="inputAudioFormat">
-                            <option value="pcm16" selected>PCM16 (24kHz, 16-bit)</option>
-                            <option value="g711_ulaw">G.711 μ-law</option>
-                            <option value="g711_alaw">G.711 A-law</option>
-                        </select>
-                    </div>
-                    <div class="setting-item">
-                        <label for="outputAudioFormat">Output Audio Format</label>
-                        <select id="outputAudioFormat">
-                            <option value="pcm16" selected>PCM16 (24kHz, 16-bit)</option>
-                            <option value="g711_ulaw">G.711 μ-law</option>
-                            <option value="g711_alaw">G.711 A-law</option>
-                        </select>
-                    </div>
-                </div>
-
-                <!-- Modalities -->
-                <div class="settings-section">
-                    <h3>Modalities</h3>
-                    <div class="setting-item checkbox-item">
-                        <input type="checkbox" id="modalityText" checked>
-                        <label for="modalityText">Text</label>
-                    </div>
-                    <div class="setting-item checkbox-item">
-                        <input type="checkbox" id="modalityAudio" checked>
-                        <label for="modalityAudio">Audio</label>
-                    </div>
-                </div>
-
-                <!-- Turn Detection -->
-                <div class="settings-section">
-                    <h3>Turn Detection</h3>
-                    <div class="setting-item">
-                        <label for="turnDetectionType">Type</label>
-                        <select id="turnDetectionType">
-                            <option value="server_vad" selected>Server VAD</option>
-                            <option value="none">None (Manual)</option>
-                        </select>
-                    </div>
-                    <div class="setting-item">
-                        <label for="vadThreshold">
-                            VAD Threshold: <span class="range-value" id="vadThresholdValue">0.5</span>
-                        </label>
-                        <input type="range" id="vadThreshold" min="0" max="1" step="0.05" value="0.5">
-                        <div class="info-text">Higher = less sensitive (0.0 - 1.0)</div>
-                    </div>
-                    <div class="setting-item">
-                        <label for="prefixPaddingMs">
-                            Prefix Padding: <span class="range-value" id="prefixPaddingMsValue">300</span>ms
-                        </label>
-                        <input type="range" id="prefixPaddingMs" min="0" max="1000" step="50" value="300">
-                        <div class="info-text">Audio before speech detection</div>
-                    </div>
-                    <div class="setting-item">
-                        <label for="silenceDurationMs">
-                            Silence Duration: <span class="range-value" id="silenceDurationMsValue">500</span>ms
-                        </label>
-                        <input type="range" id="silenceDurationMs" min="100" max="3000" step="100" value="500">
-                        <div class="info-text">Silence before turn ends</div>
-                    </div>
-                    <div class="setting-item checkbox-item">
-                        <input type="checkbox" id="createResponse" checked>
-                        <label for="createResponse">Auto-create Response</label>
-                    </div>
-                </div>
-
-                <!-- Response Generation -->
-                <div class="settings-section">
-                    <h3>Response Generation</h3>
-                    <div class="setting-item">
-                        <label for="temperature">
-                            Temperature: <span class="range-value" id="temperatureValue">0.8</span>
-                        </label>
-                        <input type="range" id="temperature" min="0.6" max="1.2" step="0.05" value="0.8">
-                        <div class="info-text">Randomness (0.6 - 1.2, default 0.8)</div>
-                    </div>
-                    <div class="setting-item">
-                        <label for="maxResponseTokens">
-                            Max Response Tokens: <span class="range-value" id="maxResponseTokensValue">4096</span>
-                        </label>
-                        <input type="range" id="maxResponseTokens" min="256" max="4096" step="256" value="4096">
-                        <div class="info-text">Maximum output length</div>
-                    </div>
-                </div>
-
-                <!-- Input Audio Transcription -->
-                <div class="settings-section">
-                    <h3>Input Audio Transcription</h3>
-                    <div class="setting-item checkbox-item">
-                        <input type="checkbox" id="enableTranscription">
-                        <label for="enableTranscription">Enable Transcription</label>
-                    </div>
-                    <div class="setting-item">
-                        <label for="transcriptionModel">Model</label>
-                        <input type="text" id="transcriptionModel" value="whisper-1" placeholder="whisper-1">
-                    </div>
-                </div>
-
-                <!-- Context & Truncation -->
-                <div class="settings-section">
-                    <h3>Context Management</h3>
-                    <div class="setting-item">
-                        <label for="maxTokens">
-                            Max Context Tokens: <span class="range-value" id="maxTokensValue">32768</span>
-                        </label>
-                        <input type="range" id="maxTokens" min="4096" max="128000" step="4096" value="32768">
-                        <div class="info-text">Maximum conversation context</div>
-                    </div>
-                </div>
-
-                <!-- Moderation & Safety -->
-                <div class="settings-section">
-                    <h3>Moderation & Safety</h3>
-                    <div class="info-text" style="margin-bottom: 15px;">
-                        Note: OpenAI Realtime API has built-in content moderation.
-                        For custom moderation, disable auto-response in Turn Detection
-                        and manually review transcripts before creating responses.
-                    </div>
-                    <div class="setting-item checkbox-item">
-                        <input type="checkbox" id="disableModeration">
-                        <label for="disableModeration">Manual Response Mode (for custom moderation)</label>
-                    </div>
-                    <div class="info-text">
-                        When enabled, responses won't auto-generate. Use Push-to-Talk
-                        and check console for transcripts before responding.
-                    </div>
-                </div>
-
-                <!-- Tool Choice (for future extensions) -->
-                <div class="settings-section">
-                    <h3>Advanced</h3>
-                    <div class="setting-item">
-                        <label for="toolChoice">Tool Choice</label>
-                        <select id="toolChoice">
-                            <option value="auto" selected>Auto</option>
-                            <option value="none">None</option>
-                            <option value="required">Required</option>
-                        </select>
-                    </div>
-                    <div class="setting-item checkbox-item">
-                        <input type="checkbox" id="enableDebugLog" checked>
-                        <label for="enableDebugLog">Enable Console Debug Logging</label>
-                    </div>
-                </div>
-            </div>
-
-            <!-- Video Container -->
-            <div class="video-container" id="videoContainer" style="display: none;">
-                <video id="localVideo" autoplay playsinline muted></video>
-                <div class="video-controls">
-                    <button onclick="stopVideo()" class="btn-danger">Stop</button>
-                </div>
-            </div>
-
-            <!-- Connection Controls -->
             <div class="button-row">
                 <button onclick="connect()" class="btn-success" id="connectBtn">Connect</button>
                 <button onclick="disconnect()" class="btn-danger" id="disconnectBtn" disabled>Disconnect</button>
             </div>
 
-            <!-- Push to Talk Button -->
             <button class="ptt-button btn-warning" id="pttButton" disabled
                     onmousedown="startPushToTalk()"
                     onmouseup="stopPushToTalk()"
@@ -557,11 +390,241 @@
                 Hold to Talk
             </button>
 
-            <!-- Media Controls -->
             <div class="button-row">
-                <button onclick="startCamera()" class="btn-info" id="cameraBtn">Camera</button>
-                <button onclick="startScreenShare()" class="btn-info" id="screenBtn">Screen</button>
                 <button onclick="interruptResponse()" class="btn-danger" id="interruptBtn" disabled>Interrupt</button>
+            </div>
+
+            <div class="button-row">
+                <button onclick="startCamera()" class="btn-primary" id="cameraBtn">Camera</button>
+                <button onclick="startScreenShare()" class="btn-primary" id="screenBtn">Screen</button>
+            </div>
+
+            <div class="video-container" id="videoContainer">
+                <video id="localVideo" autoplay playsinline muted></video>
+                <div class="video-controls">
+                    <button onclick="stopVideo()" class="btn-danger">Stop Video</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Settings Tab -->
+        <div class="tab-content" id="settingsTab">
+            <!-- Model Settings -->
+            <div class="settings-section">
+                <div class="control-group">
+                    <label for="model">Model</label>
+                    <select id="model">
+                        <option value="gpt-realtime" selected>gpt-realtime (Latest - Aug 2025)</option>
+                        <option value="gpt-4o-realtime-preview-2025-06-03">gpt-4o-realtime-preview-2025-06-03</option>
+                        <option value="gpt-4o-mini-realtime-preview-2024-12-17">gpt-4o-mini-realtime-preview (2024-12-17)</option>
+                        <option value="gpt-4o-realtime-preview-2024-12-17">gpt-4o-realtime-preview (2024-12-17)</option>
+                        <option value="gpt-4o-realtime-preview">gpt-4o-realtime-preview (Generic)</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label for="voice">Voice</label>
+                    <select id="voice">
+                        <option value="alloy">Alloy (Neutral, balanced)</option>
+                        <option value="ash">Ash (Clear, precise)</option>
+                        <option value="ballad">Ballad (Melodic, smooth)</option>
+                        <option value="coral">Coral (Warm, friendly)</option>
+                        <option value="echo">Echo (Resonant, deep)</option>
+                        <option value="sage">Sage (Calm, thoughtful)</option>
+                        <option value="shimmer" selected>Shimmer (Bright, energetic)</option>
+                        <option value="verse">Verse (Versatile, expressive)</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label for="instructions">System Instructions</label>
+                    <textarea id="instructions" placeholder="You are a helpful assistant...">You are a helpful assistant. Be concise and friendly.</textarea>
+                </div>
+            </div>
+
+            <!-- Modalities -->
+            <div class="collapsible-header" onclick="toggleCollapsible('modalities')">
+                <span>Modalities</span>
+                <span class="collapse-icon" id="modalities-icon">▼</span>
+            </div>
+            <div class="collapsible-content" id="modalities-content">
+                <div class="control-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="modalityText" checked>
+                        <label for="modalityText">Text</label>
+                    </div>
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="modalityAudio" checked>
+                        <label for="modalityAudio">Audio</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Audio Formats -->
+            <div class="collapsible-header" onclick="toggleCollapsible('audio')">
+                <span>Audio Formats</span>
+                <span class="collapse-icon" id="audio-icon">▼</span>
+            </div>
+            <div class="collapsible-content" id="audio-content">
+                <div class="control-group">
+                    <label for="inputAudioFormat">Input Audio Format</label>
+                    <select id="inputAudioFormat">
+                        <option value="pcm16" selected>PCM16 (24kHz, 16-bit)</option>
+                        <option value="g711_ulaw">G.711 μ-law</option>
+                        <option value="g711_alaw">G.711 A-law</option>
+                    </select>
+                </div>
+
+                <div class="control-group">
+                    <label for="outputAudioFormat">Output Audio Format</label>
+                    <select id="outputAudioFormat">
+                        <option value="pcm16" selected>PCM16 (24kHz, 16-bit)</option>
+                        <option value="g711_ulaw">G.711 μ-law</option>
+                        <option value="g711_alaw">G.711 A-law</option>
+                    </select>
+                </div>
+            </div>
+
+            <!-- Turn Detection -->
+            <div class="collapsible-header" onclick="toggleCollapsible('turndet')">
+                <span>Turn Detection</span>
+                <span class="collapse-icon" id="turndet-icon">▼</span>
+            </div>
+            <div class="collapsible-content" id="turndet-content">
+                <div class="control-group">
+                    <label for="turnDetectionType">Type</label>
+                    <select id="turnDetectionType" onchange="updateTurnDetectionUI()">
+                        <option value="server_vad" selected>Server VAD</option>
+                        <option value="semantic_vad">Semantic VAD</option>
+                        <option value="none">None (Manual)</option>
+                    </select>
+
+                    <!-- Server VAD Settings -->
+                    <div id="serverVadSettings">
+                        <div class="setting-item">
+                            <label>Threshold: <span class="range-value" id="vadThresholdValue">0.5</span></label>
+                            <input type="range" id="vadThreshold" min="0" max="1" step="0.05" value="0.5">
+                            <div class="info-text">Speech detection sensitivity (0.0-1.0)</div>
+                        </div>
+
+                        <div class="setting-item">
+                            <label>Prefix Padding: <span class="range-value" id="prefixPaddingMsValue">300</span>ms</label>
+                            <input type="range" id="prefixPaddingMs" min="0" max="1000" step="50" value="300">
+                            <div class="info-text">Audio before speech detection</div>
+                        </div>
+
+                        <div class="setting-item">
+                            <label>Silence Duration: <span class="range-value" id="silenceDurationMsValue">800</span>ms</label>
+                            <input type="range" id="silenceDurationMs" min="100" max="3000" step="100" value="800">
+                            <div class="info-text">Silence before turn ends</div>
+                        </div>
+                    </div>
+
+                    <!-- Semantic VAD Settings -->
+                    <div id="semanticVadSettings" style="display: none;">
+                        <div class="setting-item">
+                            <label for="eagerness">Eagerness</label>
+                            <select id="eagerness">
+                                <option value="auto" selected>Auto</option>
+                                <option value="low">Low</option>
+                                <option value="medium">Medium</option>
+                                <option value="high">High</option>
+                            </select>
+                            <div class="info-text">How eagerly the model detects turn completion</div>
+                        </div>
+
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="createResponse" checked>
+                            <label for="createResponse">Auto-create Response</label>
+                        </div>
+
+                        <div class="checkbox-item">
+                            <input type="checkbox" id="interruptResponse" checked>
+                            <label for="interruptResponse">Allow Interrupt Response</label>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Noise Reduction -->
+            <div class="collapsible-header" onclick="toggleCollapsible('noise')">
+                <span>Input Audio Noise Reduction</span>
+                <span class="collapse-icon" id="noise-icon">▼</span>
+            </div>
+            <div class="collapsible-content" id="noise-content">
+                <div class="control-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="enableNoiseReduction">
+                        <label for="enableNoiseReduction">Enable Noise Reduction</label>
+                    </div>
+
+                    <div id="noiseReductionSettings" style="display: none;">
+                        <label for="noiseReductionType">Mode</label>
+                        <select id="noiseReductionType">
+                            <option value="near_field" selected>Near Field (headset/close mic)</option>
+                            <option value="far_field">Far Field (laptop/room mic)</option>
+                        </select>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Response Generation -->
+            <div class="collapsible-header" onclick="toggleCollapsible('response')">
+                <span>Response Generation</span>
+                <span class="collapse-icon" id="response-icon">▼</span>
+            </div>
+            <div class="collapsible-content" id="response-content">
+                <div class="control-group">
+                    <div class="setting-item">
+                        <label>Temperature: <span class="range-value" id="temperatureValue">0.8</span></label>
+                        <input type="range" id="temperature" min="0.6" max="1.2" step="0.05" value="0.8">
+                        <div class="info-text">Randomness (0.6-1.2, recommended: 0.8)</div>
+                    </div>
+
+                    <div class="setting-item">
+                        <label>Max Response Tokens: <span class="range-value" id="maxResponseTokensValue">4096</span></label>
+                        <input type="range" id="maxResponseTokens" min="256" max="4096" step="256" value="4096">
+                        <div class="info-text">Maximum output length</div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Input Audio Transcription -->
+            <div class="collapsible-header" onclick="toggleCollapsible('transcription')">
+                <span>Input Audio Transcription</span>
+                <span class="collapse-icon" id="transcription-icon">▼</span>
+            </div>
+            <div class="collapsible-content" id="transcription-content">
+                <div class="control-group">
+                    <div class="checkbox-item">
+                        <input type="checkbox" id="enableTranscription">
+                        <label for="enableTranscription">Enable Transcription</label>
+                    </div>
+
+                    <div id="transcriptionSettings" style="display: none;">
+                        <div class="setting-item">
+                            <label for="transcriptionModel">Model</label>
+                            <input type="text" id="transcriptionModel" value="whisper-1">
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Tools -->
+            <div class="collapsible-header" onclick="toggleCollapsible('tools')">
+                <span>Tools & Function Calling</span>
+                <span class="collapse-icon" id="tools-icon">▼</span>
+            </div>
+            <div class="collapsible-content" id="tools-content">
+                <div class="control-group">
+                    <label for="toolChoice">Tool Choice</label>
+                    <select id="toolChoice">
+                        <option value="auto" selected>Auto</option>
+                        <option value="none">None</option>
+                        <option value="required">Required</option>
+                    </select>
+                    <div class="info-text">No tools configured yet. Add via session.update.</div>
+                </div>
             </div>
         </div>
     </div>
@@ -578,9 +641,9 @@
         let audioQueue = [];
         let isPlaying = false;
         let currentAudioSource = null;
-
-        // iOS Audio Context unlock
         let audioContextUnlocked = false;
+        let audioProcessor = null;
+        let audioSource = null;
 
         // DOM elements
         const apiKeyInput = document.getElementById('apiKey');
@@ -593,22 +656,18 @@
         const videoContainer = document.getElementById('videoContainer');
         const localVideo = document.getElementById('localVideo');
 
-        // Load API key from localStorage
+        // Load API key
         window.addEventListener('load', () => {
             const savedKey = localStorage.getItem('openai_api_key');
-            if (savedKey) {
-                apiKeyInput.value = savedKey;
-            }
+            if (savedKey) apiKeyInput.value = savedKey;
 
-            // Setup range input listeners
             setupRangeInputs();
+            setupCheckboxListeners();
 
-            // Unlock audio on first touch (iOS requirement)
             document.addEventListener('touchstart', unlockAudioContext, { once: true });
             document.addEventListener('click', unlockAudioContext, { once: true });
         });
 
-        // Save API key
         apiKeyInput.addEventListener('change', () => {
             localStorage.setItem('openai_api_key', apiKeyInput.value);
         });
@@ -621,34 +680,65 @@
                 source.connect(audioContext.destination);
                 source.start(0);
                 audioContextUnlocked = true;
-                debugLog('🔓 Audio context unlocked (iOS)');
+                console.log('🔓 Audio context unlocked');
             }
+        }
+
+        function switchTab(tab) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+
+            if (tab === 'chat') {
+                document.querySelectorAll('.tab')[0].classList.add('active');
+                document.getElementById('chatTab').classList.add('active');
+            } else {
+                document.querySelectorAll('.tab')[1].classList.add('active');
+                document.getElementById('settingsTab').classList.add('active');
+            }
+        }
+
+        function toggleCollapsible(id) {
+            const content = document.getElementById(id + '-content');
+            const icon = document.getElementById(id + '-icon');
+            content.classList.toggle('open');
+            icon.classList.toggle('open');
         }
 
         function setupRangeInputs() {
             const ranges = [
-                { id: 'vadThreshold', valueId: 'vadThresholdValue' },
-                { id: 'prefixPaddingMs', valueId: 'prefixPaddingMsValue' },
-                { id: 'silenceDurationMs', valueId: 'silenceDurationMsValue' },
-                { id: 'temperature', valueId: 'temperatureValue' },
-                { id: 'maxResponseTokens', valueId: 'maxResponseTokensValue' },
-                { id: 'maxTokens', valueId: 'maxTokensValue' }
+                'vadThreshold', 'prefixPaddingMs', 'silenceDurationMs',
+                'temperature', 'maxResponseTokens'
             ];
 
-            ranges.forEach(({ id, valueId }) => {
+            ranges.forEach(id => {
                 const input = document.getElementById(id);
-                const valueSpan = document.getElementById(valueId);
-                input.addEventListener('input', () => {
-                    valueSpan.textContent = input.value;
-                });
+                const valueSpan = document.getElementById(id + 'Value');
+                if (input && valueSpan) {
+                    input.addEventListener('input', () => {
+                        valueSpan.textContent = input.value;
+                    });
+                }
             });
         }
 
-        function toggleSettings() {
-            const panel = document.getElementById('settingsPanel');
-            const toggleText = document.getElementById('settingsToggleText');
-            panel.classList.toggle('open');
-            toggleText.textContent = panel.classList.contains('open') ? 'Hide Settings' : 'Show Settings';
+        function setupCheckboxListeners() {
+            document.getElementById('enableNoiseReduction').addEventListener('change', (e) => {
+                document.getElementById('noiseReductionSettings').style.display =
+                    e.target.checked ? 'block' : 'none';
+            });
+
+            document.getElementById('enableTranscription').addEventListener('change', (e) => {
+                document.getElementById('transcriptionSettings').style.display =
+                    e.target.checked ? 'block' : 'none';
+            });
+        }
+
+        function updateTurnDetectionUI() {
+            const type = document.getElementById('turnDetectionType').value;
+            document.getElementById('serverVadSettings').style.display =
+                type === 'server_vad' ? 'block' : 'none';
+            document.getElementById('semanticVadSettings').style.display =
+                type === 'semantic_vad' ? 'block' : 'none';
         }
 
         function updateStatus(status, text) {
@@ -661,33 +751,45 @@
             if (document.getElementById('modalityText').checked) modalities.push('text');
             if (document.getElementById('modalityAudio').checked) modalities.push('audio');
 
-            const turnDetectionType = document.getElementById('turnDetectionType').value;
-            const disableModeration = document.getElementById('disableModeration').checked;
-
-            // If manual moderation mode is enabled, disable auto-response
-            const createResponse = disableModeration ? false : document.getElementById('createResponse').checked;
-
-            const turnDetection = turnDetectionType === 'none' ? null : {
-                type: turnDetectionType,
-                threshold: parseFloat(document.getElementById('vadThreshold').value),
-                prefix_padding_ms: parseInt(document.getElementById('prefixPaddingMs').value),
-                silence_duration_ms: parseInt(document.getElementById('silenceDurationMs').value),
-                create_response: createResponse
-            };
-
             const config = {
                 modalities: modalities,
                 instructions: document.getElementById('instructions').value,
                 voice: document.getElementById('voice').value,
                 input_audio_format: document.getElementById('inputAudioFormat').value,
                 output_audio_format: document.getElementById('outputAudioFormat').value,
-                turn_detection: turnDetection,
                 temperature: parseFloat(document.getElementById('temperature').value),
                 max_response_output_tokens: parseInt(document.getElementById('maxResponseTokens').value),
                 tool_choice: document.getElementById('toolChoice').value
             };
 
-            // Add transcription if enabled
+            // Turn detection
+            const turnDetectionType = document.getElementById('turnDetectionType').value;
+            if (turnDetectionType === 'server_vad') {
+                config.turn_detection = {
+                    type: 'server_vad',
+                    threshold: parseFloat(document.getElementById('vadThreshold').value),
+                    prefix_padding_ms: parseInt(document.getElementById('prefixPaddingMs').value),
+                    silence_duration_ms: parseInt(document.getElementById('silenceDurationMs').value)
+                };
+            } else if (turnDetectionType === 'semantic_vad') {
+                config.turn_detection = {
+                    type: 'semantic_vad',
+                    eagerness: document.getElementById('eagerness').value,
+                    create_response: document.getElementById('createResponse').checked,
+                    interrupt_response: document.getElementById('interruptResponse').checked
+                };
+            } else {
+                config.turn_detection = null;
+            }
+
+            // Noise reduction
+            if (document.getElementById('enableNoiseReduction').checked) {
+                config.input_audio_noise_reduction = {
+                    type: document.getElementById('noiseReductionType').value
+                };
+            }
+
+            // Transcription
             if (document.getElementById('enableTranscription').checked) {
                 config.input_audio_transcription = {
                     model: document.getElementById('transcriptionModel').value
@@ -695,13 +797,6 @@
             }
 
             return config;
-        }
-
-        // Helper for debug logging
-        function debugLog(...args) {
-            if (document.getElementById('enableDebugLog')?.checked) {
-                console.log(...args);
-            }
         }
 
         async function connect() {
@@ -723,12 +818,11 @@
                     });
                 }
 
-                // Resume audio context if suspended (iOS)
                 if (audioContext.state === 'suspended') {
                     await audioContext.resume();
                 }
 
-                // Get microphone access
+                // Get microphone
                 audioStream = await navigator.mediaDevices.getUserMedia({
                     audio: {
                         channelCount: 1,
@@ -739,15 +833,9 @@
                     }
                 });
 
-                // Connect to OpenAI Realtime API
-                // Browser WebSocket uses subprotocol for authentication
+                // Connect WebSocket
                 const model = document.getElementById('model').value;
                 const wsUrl = `wss://api.openai.com/v1/realtime?model=${model}`;
-
-                // Authentication via WebSocket subprotocol
-                // Format: ["realtime", "openai-insecure-api-key.YOUR_KEY"]
-                // Note: "insecure" here means the key is in the browser (client-side)
-                // For production, use ephemeral tokens from your server
                 const protocols = ["realtime", `openai-insecure-api-key.${apiKey}`, "openai-beta.realtime-v1"];
 
                 ws = new WebSocket(wsUrl, protocols);
@@ -755,9 +843,8 @@
                 ws.onopen = () => {
                     console.log('✅ WebSocket connected');
 
-                    // Send session update with configuration
                     const sessionConfig = getSessionConfig();
-                    debugLog('📤 Sending session config:', sessionConfig);
+                    console.log('📤 Session config:', sessionConfig);
 
                     ws.send(JSON.stringify({
                         type: 'session.update',
@@ -770,7 +857,7 @@
                     pttButton.disabled = false;
                     interruptBtn.disabled = false;
 
-                    // Start continuous audio streaming if not using push-to-talk
+                    // Auto-start recording if VAD enabled
                     if (document.getElementById('turnDetectionType').value !== 'none') {
                         startContinuousRecording();
                     }
@@ -779,143 +866,66 @@
                 ws.onmessage = async (event) => {
                     try {
                         const message = JSON.parse(event.data);
-                        debugLog('📨 Received:', message.type, message);
+                        console.log('📨', message.type);
 
                         switch (message.type) {
-                            // Session events
                             case 'session.created':
                             case 'session.updated':
-                                debugLog('✅ Session configured:', message.session);
+                                console.log('✅ Session:', message.session);
                                 break;
 
-                            // Audio response events
                             case 'response.audio.delta':
-                                if (message.delta) {
-                                    await playAudioDelta(message.delta);
-                                }
-                                break;
-
-                            case 'response.audio.done':
-                                debugLog('🔊 Audio response complete');
-                                break;
-
-                            case 'response.audio_transcript.delta':
-                                debugLog('📝 Transcript delta:', message.delta);
-                                break;
-
-                            case 'response.audio_transcript.done':
-                                console.log('📝 Assistant transcript:', message.transcript);
-                                break;
-
-                            // Input audio events
-                            case 'input_audio_buffer.committed':
-                                debugLog('✅ Audio buffer committed');
-                                break;
-
-                            case 'input_audio_buffer.cleared':
-                                debugLog('🧹 Audio buffer cleared');
+                                if (message.delta) await playAudioDelta(message.delta);
                                 break;
 
                             case 'input_audio_buffer.speech_started':
-                                debugLog('🎤 User started speaking');
                                 statusText.textContent = 'Listening...';
                                 break;
 
                             case 'input_audio_buffer.speech_stopped':
-                                debugLog('🎤 User stopped speaking');
                                 statusText.textContent = 'Processing...';
                                 break;
 
-                            // Transcription events
                             case 'conversation.item.input_audio_transcription.completed':
-                                console.log('📝 User said:', message.transcript);
+                                console.log('📝 You:', message.transcript);
                                 break;
 
-                            case 'conversation.item.input_audio_transcription.failed':
-                                console.warn('⚠️ Transcription failed:', message.error);
-                                break;
-
-                            // Response events
-                            case 'response.created':
-                                debugLog('💬 Response started');
-                                statusText.textContent = 'Responding...';
-                                break;
-
-                            case 'response.done':
-                                debugLog('✅ Response completed');
-                                statusText.textContent = 'Connected';
-                                break;
-
-                            case 'response.cancelled':
-                                debugLog('❌ Response cancelled');
-                                statusText.textContent = 'Connected';
-                                break;
-
-                            // Text response events
-                            case 'response.text.delta':
-                                debugLog('📝 Text delta:', message.delta);
+                            case 'response.audio_transcript.done':
+                                console.log('📝 Assistant:', message.transcript);
                                 break;
 
                             case 'response.text.done':
                                 console.log('📝 Assistant text:', message.text);
                                 break;
 
-                            // Conversation events
-                            case 'conversation.created':
-                                debugLog('💬 Conversation created:', message.conversation);
+                            case 'response.created':
+                                statusText.textContent = 'Responding...';
                                 break;
 
-                            case 'conversation.item.created':
-                                debugLog('➕ Item created:', message.item);
+                            case 'response.done':
+                                statusText.textContent = 'Connected';
                                 break;
 
-                            case 'conversation.item.truncated':
-                                debugLog('✂️ Item truncated');
-                                break;
-
-                            case 'conversation.item.deleted':
-                                debugLog('🗑️ Item deleted');
-                                break;
-
-                            // Function calling events
-                            case 'response.function_call_arguments.delta':
-                                debugLog('⚙️ Function args delta:', message.delta);
-                                break;
-
-                            case 'response.function_call_arguments.done':
-                                console.log('⚙️ Function call:', message.arguments);
-                                break;
-
-                            // Rate limits
-                            case 'rate_limits.updated':
-                                debugLog('📊 Rate limits:', message.rate_limits);
-                                break;
-
-                            // Errors
                             case 'error':
                                 console.error('❌ Error:', message.error);
                                 statusText.textContent = `Error: ${message.error.type}`;
 
-                                // Show user-friendly error
                                 let errorMsg = message.error.message || 'Unknown error';
                                 if (message.error.code === 'invalid_api_key') {
-                                    errorMsg = 'Invalid API key. Please check your OpenAI API key.';
+                                    errorMsg = 'Invalid API key';
                                 } else if (message.error.code === 'insufficient_quota') {
-                                    errorMsg = 'Insufficient quota. Please check your OpenAI account.';
+                                    errorMsg = 'Insufficient quota';
                                 }
                                 alert(`Error: ${errorMsg}`);
                                 break;
-
-                            default:
-                                debugLog('ℹ️ Unhandled event:', message.type, message);
                         }
                     } catch (error) {
-                        console.error('❌ Error parsing message:', error, event.data);
+                        console.error('❌ Parse error:', error);
                     }
                 };
 
                 ws.onerror = (error) => {
-                    console.error('WebSocket error:', error);
+                    console.error('❌ WebSocket error:', error);
                     updateStatus('disconnected', 'Connection error');
                 };
 
@@ -925,9 +935,9 @@
                 };
 
             } catch (error) {
-                console.error('Connection error:', error);
-                alert(`Connection failed: ${error.message}`);
-                updateStatus('disconnected', 'Connection failed');
+                console.error('❌ Connection failed:', error);
+                alert(`Failed: ${error.message}`);
+                updateStatus('disconnected', 'Failed');
                 connectBtn.disabled = false;
             }
         }
@@ -938,8 +948,14 @@
                 ws = null;
             }
 
-            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
-                mediaRecorder.stop();
+            if (audioProcessor) {
+                audioProcessor.disconnect();
+                audioProcessor = null;
+            }
+
+            if (audioSource) {
+                audioSource.disconnect();
+                audioSource = null;
             }
 
             if (audioStream) {
@@ -959,18 +975,13 @@
             if (!audioStream || isRecording) return;
 
             try {
-                const source = audioContext.createMediaStreamSource(audioStream);
+                audioSource = audioContext.createMediaStreamSource(audioStream);
+                audioProcessor = audioContext.createScriptProcessor(2048, 1, 1);
 
-                // Use ScriptProcessor (deprecated but widely supported)
-                // TODO: Migrate to AudioWorklet for better performance
-                const processor = audioContext.createScriptProcessor(2048, 1, 1);
-
-                processor.onaudioprocess = (e) => {
+                audioProcessor.onaudioprocess = (e) => {
                     if (!ws || ws.readyState !== WebSocket.OPEN) return;
 
                     const inputData = e.inputBuffer.getChannelData(0);
-
-                    // Resample to 24kHz if needed
                     const pcm16 = floatTo16BitPCM(inputData);
                     const base64Audio = arrayBufferToBase64(pcm16);
 
@@ -980,17 +991,17 @@
                             audio: base64Audio
                         }));
                     } catch (error) {
-                        console.error('Error sending audio:', error);
+                        console.error('❌ Send error:', error);
                     }
                 };
 
-                source.connect(processor);
-                processor.connect(audioContext.destination);
+                audioSource.connect(audioProcessor);
+                audioProcessor.connect(audioContext.destination);
                 isRecording = true;
 
-                debugLog('✅ Continuous recording started');
+                console.log('✅ Recording started');
             } catch (error) {
-                console.error('❌ Error starting recording:', error);
+                console.error('❌ Recording error:', error);
                 alert('Failed to start recording: ' + error.message);
             }
         }
@@ -1003,14 +1014,7 @@
             pttButton.classList.add('active');
             pttButton.textContent = 'Recording...';
 
-            debugLog('🎤 Push-to-talk started');
-
-            // Clear any existing audio buffer
-            ws.send(JSON.stringify({
-                type: 'input_audio_buffer.clear'
-            }));
-
-            // Start recording
+            ws.send(JSON.stringify({ type: 'input_audio_buffer.clear' }));
             startContinuousRecording();
         }
 
@@ -1022,25 +1026,15 @@
             pttButton.classList.remove('active');
             pttButton.textContent = 'Hold to Talk';
 
-            debugLog('🎤 Push-to-talk stopped');
-
-            // Commit the audio buffer
             if (ws && ws.readyState === WebSocket.OPEN) {
-                ws.send(JSON.stringify({
-                    type: 'input_audio_buffer.commit'
-                }));
-
-                // Create response
-                ws.send(JSON.stringify({
-                    type: 'response.create'
-                }));
+                ws.send(JSON.stringify({ type: 'input_audio_buffer.commit' }));
+                ws.send(JSON.stringify({ type: 'response.create' }));
             }
         }
 
         function interruptResponse() {
             if (!ws || ws.readyState !== WebSocket.OPEN) return;
 
-            // Stop current audio playback
             if (currentAudioSource) {
                 currentAudioSource.stop();
                 currentAudioSource = null;
@@ -1048,17 +1042,10 @@
             audioQueue = [];
             isPlaying = false;
 
-            // Cancel current response
-            ws.send(JSON.stringify({
-                type: 'response.cancel'
-            }));
+            ws.send(JSON.stringify({ type: 'response.cancel' }));
+            ws.send(JSON.stringify({ type: 'input_audio_buffer.clear' }));
 
-            // Clear input audio buffer
-            ws.send(JSON.stringify({
-                type: 'input_audio_buffer.clear'
-            }));
-
-            console.log('⏹️ Response interrupted');
+            console.log('⏹️ Interrupted');
         }
 
         async function playAudioDelta(base64Audio) {
@@ -1071,11 +1058,9 @@
 
                 audioQueue.push(audioBuffer);
 
-                if (!isPlaying) {
-                    playNextInQueue();
-                }
+                if (!isPlaying) playNextInQueue();
             } catch (error) {
-                console.error('Error playing audio:', error);
+                console.error('❌ Audio playback error:', error);
             }
         }
 
@@ -1141,7 +1126,7 @@
             return bytes.buffer;
         }
 
-        // Video/Screen sharing functions
+        // Video/Screen sharing
         async function startCamera() {
             try {
                 mediaStream = await navigator.mediaDevices.getUserMedia({
@@ -1149,9 +1134,9 @@
                     audio: false
                 });
                 localVideo.srcObject = mediaStream;
-                videoContainer.style.display = 'block';
+                videoContainer.classList.add('active');
             } catch (error) {
-                console.error('Camera error:', error);
+                console.error('❌ Camera error:', error);
                 alert('Failed to access camera: ' + error.message);
             }
         }
@@ -1163,14 +1148,11 @@
                     audio: false
                 });
                 localVideo.srcObject = mediaStream;
-                videoContainer.style.display = 'block';
+                videoContainer.classList.add('active');
 
-                // Handle when user stops sharing
-                mediaStream.getVideoTracks()[0].onended = () => {
-                    stopVideo();
-                };
+                mediaStream.getVideoTracks()[0].onended = () => stopVideo();
             } catch (error) {
-                console.error('Screen share error:', error);
+                console.error('❌ Screen share error:', error);
                 alert('Failed to share screen: ' + error.message);
             }
         }
@@ -1181,7 +1163,7 @@
                 mediaStream = null;
             }
             localVideo.srcObject = null;
-            videoContainer.style.display = 'none';
+            videoContainer.classList.remove('active');
         }
 
         // iOS background audio support
@@ -1193,23 +1175,21 @@
             });
         }
 
-        // Prevent sleep on iOS
+        // Wake lock
         let wakeLock = null;
         async function requestWakeLock() {
             try {
                 if ('wakeLock' in navigator) {
                     wakeLock = await navigator.wakeLock.request('screen');
-                    console.log('Wake lock acquired');
+                    console.log('🔒 Wake lock acquired');
                 }
             } catch (err) {
-                console.error('Wake lock error:', err);
+                console.error('❌ Wake lock error:', err);
             }
         }
 
-        // Request wake lock when connecting
-        document.getElementById('connectBtn').addEventListener('click', requestWakeLock);
+        connectBtn.addEventListener('click', requestWakeLock);
 
-        // Handle visibility change
         document.addEventListener('visibilitychange', async () => {
             if (wakeLock !== null && document.visibilityState === 'visible') {
                 await requestWakeLock();
