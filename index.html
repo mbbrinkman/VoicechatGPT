@@ -539,6 +539,7 @@
             <div class="video-container" id="videoContainer">
                 <video id="localVideo" autoplay playsinline muted></video>
                 <div class="video-controls">
+                    <button onclick="flipCamera()" class="btn-primary" id="flipCameraBtn" style="display: none;">Flip</button>
                     <button onclick="stopVideo()" class="btn-danger">Stop</button>
                 </div>
             </div>
@@ -970,6 +971,7 @@
         let audioContextUnlocked = false;
         let audioProcessor = null;
         let audioSource = null;
+        let currentFacingMode = 'user'; // 'user' for front camera, 'environment' for rear
 
         // DOM elements
         const apiKeyInput = document.getElementById('apiKey');
@@ -1456,28 +1458,59 @@
         }
 
         // Video/Screen sharing
-        async function startCamera() {
+        async function startCamera(facingMode = null) {
             try {
+                // Stop existing stream if any
+                if (mediaStream) {
+                    mediaStream.getTracks().forEach(track => track.stop());
+                }
+
+                // Use provided facing mode or current
+                if (facingMode) {
+                    currentFacingMode = facingMode;
+                }
+
                 mediaStream = await navigator.mediaDevices.getUserMedia({
-                    video: { facingMode: 'user', width: 1280, height: 720 },
+                    video: {
+                        facingMode: currentFacingMode,
+                        width: 1280,
+                        height: 720
+                    },
                     audio: false
                 });
                 localVideo.srcObject = mediaStream;
                 videoContainer.classList.add('active');
+
+                // Show flip button for camera (not screen share)
+                document.getElementById('flipCameraBtn').style.display = 'block';
             } catch (error) {
                 console.error('❌ Camera error:', error);
                 alert('Failed to access camera: ' + error.message);
             }
         }
 
+        async function flipCamera() {
+            // Toggle between front and rear camera
+            const newFacingMode = currentFacingMode === 'user' ? 'environment' : 'user';
+            await startCamera(newFacingMode);
+        }
+
         async function startScreenShare() {
             try {
+                // Stop existing stream if any
+                if (mediaStream) {
+                    mediaStream.getTracks().forEach(track => track.stop());
+                }
+
                 mediaStream = await navigator.mediaDevices.getDisplayMedia({
                     video: { width: 1920, height: 1080 },
                     audio: false
                 });
                 localVideo.srcObject = mediaStream;
                 videoContainer.classList.add('active');
+
+                // Hide flip button for screen share
+                document.getElementById('flipCameraBtn').style.display = 'none';
 
                 mediaStream.getVideoTracks()[0].onended = () => stopVideo();
             } catch (error) {
@@ -1493,6 +1526,9 @@
             }
             localVideo.srcObject = null;
             videoContainer.classList.remove('active');
+
+            // Hide flip button when video is stopped
+            document.getElementById('flipCameraBtn').style.display = 'none';
         }
 
         // iOS background audio support
