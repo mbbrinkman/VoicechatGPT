@@ -5,8 +5,8 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <meta name="apple-mobile-web-app-capable" content="yes">
     <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-    <meta name="apple-mobile-web-app-title" content="Voice Chat">
-    <title>OpenAI Realtime Voice Chat</title>
+    <meta name="apple-mobile-web-app-title" content="Realtime API">
+    <title>OpenAI Realtime API Console</title>
     <style>
         * {
             margin: 0;
@@ -15,25 +15,30 @@
         }
 
         :root {
-            --primary: #667eea;
-            --primary-dark: #764ba2;
-            --success: #10b981;
-            --danger: #ef4444;
-            --warning: #f59e0b;
-            --bg-glass: rgba(255,255,255,0.1);
-            --bg-glass-solid: rgba(255,255,255,0.15);
+            --bg-primary: #1a1d23;
+            --bg-secondary: #252930;
+            --bg-tertiary: #2d3139;
+            --border-color: #3d4149;
+            --text-primary: #e8e9ed;
+            --text-secondary: #9195a0;
+            --accent: #5b8bd4;
+            --accent-hover: #7aa5e8;
+            --success: #4a9d5f;
+            --danger: #c94d4d;
+            --warning: #d89b3d;
         }
 
         body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
-            background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
-            color: #fff;
+            font-family: 'Segoe UI', -apple-system, BlinkMacSystemFont, Roboto, Helvetica, Arial, sans-serif;
+            background: var(--bg-primary);
+            color: var(--text-primary);
             min-height: 100vh;
             padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+            line-height: 1.6;
         }
 
         .container {
-            max-width: 480px;
+            max-width: 720px;
             margin: 0 auto;
             padding: 20px;
             padding-bottom: 80px;
@@ -41,38 +46,47 @@
 
         h1 {
             text-align: center;
-            margin-bottom: 20px;
-            font-size: 24px;
-            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+            margin-bottom: 10px;
+            font-size: 22px;
+            font-weight: 400;
+            letter-spacing: 0.5px;
+            color: var(--text-primary);
+        }
+
+        .subtitle {
+            text-align: center;
+            font-size: 13px;
+            color: var(--text-secondary);
+            margin-bottom: 25px;
         }
 
         /* Tabs */
         .tabs {
             display: flex;
-            gap: 10px;
-            margin-bottom: 20px;
-            background: var(--bg-glass);
-            padding: 5px;
-            border-radius: 12px;
-            backdrop-filter: blur(10px);
+            border-bottom: 1px solid var(--border-color);
+            margin-bottom: 25px;
         }
 
         .tab {
             flex: 1;
-            padding: 12px;
+            padding: 12px 20px;
             border: none;
             background: transparent;
-            color: rgba(255,255,255,0.7);
-            font-size: 16px;
-            font-weight: 600;
+            color: var(--text-secondary);
+            font-size: 14px;
+            font-weight: 500;
             cursor: pointer;
-            border-radius: 8px;
-            transition: all 0.3s;
+            border-bottom: 2px solid transparent;
+            transition: all 0.2s;
+        }
+
+        .tab:hover {
+            color: var(--text-primary);
         }
 
         .tab.active {
-            background: rgba(255,255,255,0.2);
-            color: #fff;
+            color: var(--accent);
+            border-bottom-color: var(--accent);
         }
 
         .tab-content {
@@ -85,99 +99,140 @@
 
         /* Status */
         .status {
-            background: var(--bg-glass);
-            padding: 15px;
-            border-radius: 10px;
+            background: var(--bg-secondary);
+            padding: 14px 18px;
+            border: 1px solid var(--border-color);
             margin-bottom: 20px;
-            backdrop-filter: blur(10px);
+            font-size: 14px;
         }
 
         .status-indicator {
             display: inline-block;
-            width: 12px;
-            height: 12px;
+            width: 8px;
+            height: 8px;
             border-radius: 50%;
-            margin-right: 8px;
-            animation: pulse 2s ease-in-out infinite;
+            margin-right: 10px;
         }
 
         .status-indicator.disconnected { background: var(--danger); }
         .status-indicator.connecting { background: var(--warning); }
         .status-indicator.connected { background: var(--success); }
 
-        @keyframes pulse {
-            0%, 100% { opacity: 1; }
-            50% { opacity: 0.5; }
-        }
-
         /* Controls */
         .control-group {
-            background: var(--bg-glass);
-            padding: 15px;
-            border-radius: 10px;
+            background: var(--bg-secondary);
+            padding: 16px;
+            border: 1px solid var(--border-color);
             margin-bottom: 15px;
-            backdrop-filter: blur(10px);
         }
 
         .control-group label {
             display: block;
             margin-bottom: 8px;
-            font-weight: 600;
-            font-size: 14px;
+            font-weight: 500;
+            font-size: 13px;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         input, select, textarea {
             width: 100%;
-            padding: 12px;
-            border: none;
-            border-radius: 8px;
-            background: rgba(255,255,255,0.9);
-            color: #333;
-            font-size: 16px;
+            padding: 10px 12px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-tertiary);
+            color: var(--text-primary);
+            font-size: 14px;
             font-family: inherit;
+            transition: border-color 0.2s;
+        }
+
+        input:focus, select:focus, textarea:focus {
+            outline: none;
+            border-color: var(--accent);
         }
 
         textarea {
             resize: vertical;
             min-height: 80px;
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 13px;
         }
 
         .info-text {
             font-size: 12px;
-            opacity: 0.8;
-            margin-top: 5px;
-            line-height: 1.4;
+            color: var(--text-secondary);
+            margin-top: 6px;
+            line-height: 1.5;
         }
 
         /* Buttons */
         button {
             width: 100%;
-            padding: 15px 20px;
-            border: none;
-            border-radius: 10px;
-            font-size: 16px;
-            font-weight: 600;
+            padding: 12px 20px;
+            border: 1px solid var(--border-color);
+            background: var(--bg-secondary);
+            color: var(--text-primary);
+            font-size: 14px;
+            font-weight: 500;
             cursor: pointer;
-            transition: all 0.3s;
-            background: var(--bg-glass-solid);
-            color: #fff;
-            backdrop-filter: blur(10px);
+            transition: all 0.2s;
             touch-action: manipulation;
         }
 
-        button:active {
-            transform: scale(0.95);
+        button:hover:not(:disabled) {
+            background: var(--bg-tertiary);
+            border-color: var(--accent);
+        }
+
+        button:active:not(:disabled) {
+            transform: translateY(1px);
         }
 
         button:disabled {
-            opacity: 0.5;
+            opacity: 0.4;
             cursor: not-allowed;
         }
 
-        .btn-primary { background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%); }
-        .btn-success { background: linear-gradient(135deg, #10b981 0%, #059669 100%); }
-        .btn-danger { background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%); }
-        .btn-warning { background: linear-gradient(135deg, #f59e0b 0%, #d97706 100%); }
+        .btn-primary {
+            background: var(--accent);
+            border-color: var(--accent);
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: var(--accent-hover);
+            border-color: var(--accent-hover);
+        }
+
+        .btn-success {
+            background: var(--success);
+            border-color: var(--success);
+        }
+
+        .btn-success:hover:not(:disabled) {
+            background: #5eb172;
+            border-color: #5eb172;
+        }
+
+        .btn-danger {
+            background: var(--danger);
+            border-color: var(--danger);
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            background: #d66565;
+            border-color: #d66565;
+        }
+
+        .btn-warning {
+            background: var(--warning);
+            border-color: var(--warning);
+        }
+
+        .btn-warning:hover:not(:disabled) {
+            background: #e0a957;
+            border-color: #e0a957;
+        }
 
         .button-row {
             display: flex;
@@ -191,14 +246,15 @@
 
         /* Push to Talk */
         .ptt-button {
-            height: 100px;
-            font-size: 20px;
+            height: 80px;
+            font-size: 16px;
             margin: 20px 0;
+            border: 2px solid var(--border-color);
         }
 
         .ptt-button.active {
-            background: linear-gradient(135deg, #ef4444 0%, #dc2626 100%);
-            box-shadow: 0 0 30px rgba(239, 68, 68, 0.8);
+            background: var(--danger);
+            border-color: var(--danger);
         }
 
         /* Settings Sections */
@@ -208,8 +264,11 @@
 
         .settings-section h3 {
             margin-bottom: 15px;
-            font-size: 16px;
-            color: #fbbf24;
+            font-size: 14px;
+            font-weight: 500;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
         }
 
         .setting-item {
@@ -220,44 +279,42 @@
             display: block;
             margin-bottom: 5px;
             font-size: 13px;
-            opacity: 0.9;
+            color: var(--text-secondary);
         }
 
         /* Range Inputs */
         input[type="range"] {
             -webkit-appearance: none;
             appearance: none;
-            background: rgba(255,255,255,0.3);
-            height: 6px;
-            border-radius: 3px;
+            background: var(--bg-tertiary);
+            height: 4px;
+            border: 1px solid var(--border-color);
         }
 
         input[type="range"]::-webkit-slider-thumb {
             -webkit-appearance: none;
             appearance: none;
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: #fff;
+            width: 16px;
+            height: 16px;
+            background: var(--accent);
             cursor: pointer;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            border: 1px solid var(--border-color);
         }
 
         input[type="range"]::-moz-range-thumb {
-            width: 20px;
-            height: 20px;
-            border-radius: 50%;
-            background: #fff;
+            width: 16px;
+            height: 16px;
+            background: var(--accent);
             cursor: pointer;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-            border: none;
+            border: 1px solid var(--border-color);
         }
 
         .range-value {
             display: inline-block;
             margin-left: 10px;
             font-weight: 600;
-            color: #fbbf24;
+            color: var(--accent);
+            font-family: 'Consolas', 'Monaco', monospace;
         }
 
         /* Checkbox */
@@ -265,23 +322,25 @@
             display: flex;
             align-items: center;
             gap: 10px;
+            padding: 8px 0;
         }
 
         .checkbox-item input[type="checkbox"] {
             width: auto;
-            height: 20px;
-            accent-color: var(--primary);
+            height: 16px;
+            accent-color: var(--accent);
         }
 
         .checkbox-item label {
             margin: 0 !important;
+            font-size: 14px;
+            color: var(--text-primary);
         }
 
         /* Video */
         .video-container {
-            background: rgba(0,0,0,0.3);
-            border-radius: 10px;
-            overflow: hidden;
+            background: var(--bg-tertiary);
+            border: 1px solid var(--border-color);
             margin-bottom: 20px;
             position: relative;
             display: none;
@@ -302,30 +361,37 @@
             left: 0;
             right: 0;
             padding: 10px;
-            background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+            background: linear-gradient(to top, rgba(0,0,0,0.8), transparent);
             display: flex;
             gap: 10px;
         }
 
         .video-controls button {
-            padding: 8px;
-            font-size: 14px;
+            padding: 8px 16px;
+            font-size: 13px;
         }
 
         /* Collapsible sections */
         .collapsible-header {
-            background: var(--bg-glass-solid);
-            padding: 12px 15px;
-            border-radius: 8px;
+            background: var(--bg-secondary);
+            padding: 12px 16px;
+            border: 1px solid var(--border-color);
             cursor: pointer;
             margin-bottom: 10px;
             display: flex;
             justify-content: space-between;
             align-items: center;
+            transition: background 0.2s;
         }
 
         .collapsible-header:hover {
-            background: rgba(255,255,255,0.2);
+            background: var(--bg-tertiary);
+        }
+
+        .collapsible-header span {
+            font-size: 13px;
+            font-weight: 500;
+            color: var(--text-primary);
         }
 
         .collapsible-content {
@@ -339,22 +405,92 @@
 
         .collapse-icon {
             transition: transform 0.3s;
+            color: var(--text-secondary);
+            font-size: 12px;
         }
 
         .collapse-icon.open {
             transform: rotate(180deg);
         }
 
+        /* Help Tab Styles */
+        .help-section {
+            margin-bottom: 30px;
+        }
+
+        .help-section h2 {
+            font-size: 18px;
+            font-weight: 500;
+            margin-bottom: 12px;
+            color: var(--text-primary);
+            border-bottom: 1px solid var(--border-color);
+            padding-bottom: 8px;
+        }
+
+        .help-section h3 {
+            font-size: 15px;
+            font-weight: 500;
+            margin: 18px 0 10px 0;
+            color: var(--accent);
+        }
+
+        .help-section p {
+            margin-bottom: 12px;
+            color: var(--text-secondary);
+            font-size: 14px;
+            line-height: 1.7;
+        }
+
+        .help-section ul {
+            margin-bottom: 12px;
+            padding-left: 20px;
+            color: var(--text-secondary);
+            font-size: 14px;
+        }
+
+        .help-section li {
+            margin-bottom: 6px;
+            line-height: 1.6;
+        }
+
+        .help-section code {
+            background: var(--bg-tertiary);
+            padding: 2px 6px;
+            border: 1px solid var(--border-color);
+            font-family: 'Consolas', 'Monaco', monospace;
+            font-size: 13px;
+            color: var(--accent);
+        }
+
+        .help-section .note {
+            background: var(--bg-secondary);
+            border-left: 3px solid var(--accent);
+            padding: 12px;
+            margin: 15px 0;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .help-section .warning {
+            background: var(--bg-secondary);
+            border-left: 3px solid var(--warning);
+            padding: 12px;
+            margin: 15px 0;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
         @media (max-width: 400px) {
             .container { padding: 15px; padding-bottom: 80px; }
             h1 { font-size: 20px; }
-            button { padding: 12px 15px; font-size: 14px; }
+            button { padding: 10px 16px; font-size: 13px; }
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <h1>OpenAI Realtime Voice Chat</h1>
+        <h1>OpenAI Realtime API Console</h1>
+        <div class="subtitle">Speech-to-Speech Interface</div>
 
         <div class="status">
             <span class="status-indicator disconnected" id="statusIndicator"></span>
@@ -363,17 +499,18 @@
 
         <!-- Tabs -->
         <div class="tabs">
-            <button class="tab active" onclick="switchTab('chat')">Chat</button>
-            <button class="tab" onclick="switchTab('settings')">Settings</button>
+            <button class="tab active" onclick="switchTab('chat')">Session</button>
+            <button class="tab" onclick="switchTab('settings')">Configuration</button>
+            <button class="tab" onclick="switchTab('help')">Documentation</button>
         </div>
 
         <!-- Chat Tab -->
         <div class="tab-content active" id="chatTab">
             <div class="control-group">
-                <label for="apiKey">OpenAI API Key</label>
+                <label for="apiKey">API Key</label>
                 <input type="password" id="apiKey" placeholder="sk-...">
                 <div class="info-text">
-                    Stored locally. For production, use ephemeral tokens from your server.
+                    Stored in browser localStorage. Production deployments should use ephemeral tokens.
                 </div>
             </div>
 
@@ -387,7 +524,7 @@
                     onmouseup="stopPushToTalk()"
                     ontouchstart="startPushToTalk(event)"
                     ontouchend="stopPushToTalk(event)">
-                Hold to Talk
+                PRESS AND HOLD TO SPEAK
             </button>
 
             <div class="button-row">
@@ -396,13 +533,13 @@
 
             <div class="button-row">
                 <button onclick="startCamera()" class="btn-primary" id="cameraBtn">Camera</button>
-                <button onclick="startScreenShare()" class="btn-primary" id="screenBtn">Screen</button>
+                <button onclick="startScreenShare()" class="btn-primary" id="screenBtn">Screen Share</button>
             </div>
 
             <div class="video-container" id="videoContainer">
                 <video id="localVideo" autoplay playsinline muted></video>
                 <div class="video-controls">
-                    <button onclick="stopVideo()" class="btn-danger">Stop Video</button>
+                    <button onclick="stopVideo()" class="btn-danger">Stop</button>
                 </div>
             </div>
         </div>
@@ -623,8 +760,197 @@
                         <option value="none">None</option>
                         <option value="required">Required</option>
                     </select>
-                    <div class="info-text">No tools configured yet. Add via session.update.</div>
+                    <div class="info-text">No tools configured. Add via session.update.</div>
                 </div>
+            </div>
+        </div>
+
+        <!-- Help Tab -->
+        <div class="tab-content" id="helpTab">
+            <div class="help-section">
+                <h2>Overview</h2>
+                <p>This console provides a browser-based interface to the OpenAI Realtime API, enabling speech-to-speech conversations with minimal latency. The Realtime API supports both audio and text modalities, voice activity detection, and function calling.</p>
+
+                <div class="note">
+                    <strong>Note:</strong> This implementation uses client-side API keys for convenience. Production applications should use ephemeral tokens generated by your backend server.
+                </div>
+            </div>
+
+            <div class="help-section">
+                <h2>Getting Started</h2>
+                <h3>1. API Key</h3>
+                <p>Enter your OpenAI API key in the Session tab. The key is stored in browser localStorage and never leaves your device except when sent to OpenAI's servers.</p>
+
+                <h3>2. Connect</h3>
+                <p>Click "Connect" to establish a WebSocket connection to the Realtime API. The status indicator will turn green when connected.</p>
+
+                <h3>3. Speaking</h3>
+                <p>Use the "PRESS AND HOLD TO SPEAK" button for push-to-talk interaction. Release the button to submit your audio. With Server VAD or Semantic VAD enabled, you can also speak continuously without holding the button.</p>
+            </div>
+
+            <div class="help-section">
+                <h2>Configuration Reference</h2>
+
+                <h3>Model Selection</h3>
+                <ul>
+                    <li><code>gpt-realtime</code> - Latest production model (August 2025), recommended for most use cases</li>
+                    <li><code>gpt-4o-realtime-preview-2025-06-03</code> - June 2025 preview with refined voice palette</li>
+                    <li><code>gpt-4o-mini-realtime-preview-2024-12-17</code> - Smaller, faster variant for low-latency applications</li>
+                    <li><code>gpt-4o-realtime-preview-2024-12-17</code> - December 2024 preview version</li>
+                    <li><code>gpt-4o-realtime-preview</code> - Generic alias for latest preview</li>
+                </ul>
+
+                <h3>Voice Options</h3>
+                <p>The API provides eight distinct voices with different characteristics:</p>
+                <ul>
+                    <li><strong>Alloy</strong> - Neutral and balanced tone</li>
+                    <li><strong>Ash</strong> - Clear and precise articulation</li>
+                    <li><strong>Ballad</strong> - Melodic and smooth delivery</li>
+                    <li><strong>Coral</strong> - Warm and friendly demeanor</li>
+                    <li><strong>Echo</strong> - Resonant and deep voice</li>
+                    <li><strong>Sage</strong> - Calm and thoughtful presentation</li>
+                    <li><strong>Shimmer</strong> - Bright and energetic expression</li>
+                    <li><strong>Verse</strong> - Versatile and expressive range</li>
+                </ul>
+
+                <h3>Modalities</h3>
+                <p>Control which input/output modes the model uses:</p>
+                <ul>
+                    <li><strong>Text</strong> - Enable text-based responses</li>
+                    <li><strong>Audio</strong> - Enable audio-based responses</li>
+                </ul>
+                <p>Both can be enabled simultaneously for multimodal interaction.</p>
+
+                <h3>Audio Formats</h3>
+                <ul>
+                    <li><strong>PCM16</strong> - Uncompressed 24kHz 16-bit audio (highest quality, ~384 kbps)</li>
+                    <li><strong>G.711 μ-law</strong> - Compressed telephony format (lower bandwidth)</li>
+                    <li><strong>G.711 A-law</strong> - Alternative telephony compression standard</li>
+                </ul>
+
+                <h3>Turn Detection</h3>
+                <p>Controls how the system detects when you've finished speaking:</p>
+
+                <p><strong>Server VAD (Voice Activity Detection):</strong></p>
+                <ul>
+                    <li><strong>Threshold</strong> (0.0-1.0) - Speech detection sensitivity. Higher values require clearer speech signal.</li>
+                    <li><strong>Prefix Padding</strong> (0-1000ms) - Audio captured before speech is detected, ensuring no words are cut off.</li>
+                    <li><strong>Silence Duration</strong> (100-3000ms) - How long the system waits in silence before ending your turn. Default 800ms.</li>
+                </ul>
+
+                <p><strong>Semantic VAD:</strong></p>
+                <ul>
+                    <li><strong>Eagerness</strong> - How quickly the model decides you've finished speaking based on semantic meaning:
+                        <ul>
+                            <li><em>Auto</em> - Model decides automatically</li>
+                            <li><em>Low</em> - Waits longer before deciding turn is complete</li>
+                            <li><em>Medium</em> - Balanced approach</li>
+                            <li><em>High</em> - Responds quickly to complete thoughts</li>
+                        </ul>
+                    </li>
+                    <li><strong>Auto-create Response</strong> - Automatically generate response when turn is detected</li>
+                    <li><strong>Allow Interrupt Response</strong> - Allow new speech to interrupt ongoing response</li>
+                </ul>
+
+                <p><strong>None (Manual):</strong></p>
+                <p>Disables automatic turn detection. Use push-to-talk button to manually control when to submit audio.</p>
+
+                <h3>Input Audio Noise Reduction</h3>
+                <ul>
+                    <li><strong>Near Field</strong> - Optimized for close-talking microphones (headsets, earbuds)</li>
+                    <li><strong>Far Field</strong> - Optimized for distant microphones (laptop, conference room)</li>
+                </ul>
+
+                <h3>Response Generation</h3>
+                <ul>
+                    <li><strong>Temperature</strong> (0.6-1.2) - Controls randomness. 0.8 is recommended. Lower values are more deterministic, higher values more creative.</li>
+                    <li><strong>Max Response Tokens</strong> (256-4096) - Maximum length of generated response. Higher values allow longer responses but may increase latency.</li>
+                </ul>
+
+                <h3>Input Audio Transcription</h3>
+                <p>When enabled, uses Whisper to provide text transcripts of your speech. The Realtime API processes audio natively without transcription, but enabling this provides conversation.item.audio_transcription.completed events for logging or display.</p>
+
+                <h3>Tools & Function Calling</h3>
+                <ul>
+                    <li><strong>Auto</strong> - Model decides whether to call functions</li>
+                    <li><strong>None</strong> - Disable function calling</li>
+                    <li><strong>Required</strong> - Force the model to call a function</li>
+                </ul>
+                <p>Functions must be defined separately via session.update events.</p>
+            </div>
+
+            <div class="help-section">
+                <h2>Limitations</h2>
+                <ul>
+                    <li>Maximum session duration: 60 minutes (extended from 15 minutes in earlier versions)</li>
+                    <li>Maximum context: 128,000 tokens</li>
+                    <li>Audio consumption: ~800 tokens per minute</li>
+                    <li>Voice cannot be changed after initial assistant response in a conversation</li>
+                    <li>No structured output support</li>
+                </ul>
+            </div>
+
+            <div class="help-section">
+                <h2>Browser Compatibility</h2>
+                <p>This console requires:</p>
+                <ul>
+                    <li>WebSocket support (all modern browsers)</li>
+                    <li>Web Audio API (Chrome, Firefox, Safari, Edge)</li>
+                    <li>MediaDevices API for microphone access</li>
+                    <li>getUserMedia support for camera/screen sharing</li>
+                </ul>
+
+                <div class="warning">
+                    <strong>iOS Safari:</strong> Some features require user gesture to unlock audio context. The app handles this automatically on first touch/click.
+                </div>
+            </div>
+
+            <div class="help-section">
+                <h2>Security Considerations</h2>
+                <div class="warning">
+                    <strong>Production Deployment:</strong> This implementation exposes your API key in the browser. For production applications:
+                    <ol>
+                        <li>Generate ephemeral tokens from your backend server</li>
+                        <li>Use session authentication instead of API keys</li>
+                        <li>Implement rate limiting and abuse prevention</li>
+                        <li>Enable content moderation if accepting user input</li>
+                    </ol>
+                </div>
+            </div>
+
+            <div class="help-section">
+                <h2>Troubleshooting</h2>
+                <h3>Connection Issues</h3>
+                <ul>
+                    <li>Verify API key is valid and has sufficient quota</li>
+                    <li>Check browser console for WebSocket errors</li>
+                    <li>Ensure firewall allows WebSocket connections to api.openai.com</li>
+                </ul>
+
+                <h3>Audio Problems</h3>
+                <ul>
+                    <li>Grant microphone permissions when prompted</li>
+                    <li>Check system audio input settings</li>
+                    <li>Try different audio formats (PCM16 recommended)</li>
+                    <li>Adjust VAD threshold if speech not detected</li>
+                </ul>
+
+                <h3>No Response</h3>
+                <ul>
+                    <li>Ensure at least one modality (text or audio) is enabled</li>
+                    <li>Check turn detection is configured appropriately</li>
+                    <li>Verify silence duration is not too short</li>
+                    <li>Look for error events in browser console</li>
+                </ul>
+            </div>
+
+            <div class="help-section">
+                <h2>Additional Resources</h2>
+                <ul>
+                    <li><a href="https://platform.openai.com/docs/guides/realtime" target="_blank" style="color: var(--accent);">Official Realtime API Documentation</a></li>
+                    <li><a href="https://platform.openai.com/docs/api-reference/realtime" target="_blank" style="color: var(--accent);">API Reference</a></li>
+                    <li><a href="https://developers.openai.com/blog/realtime-api/" target="_blank" style="color: var(--accent);">Developer Notes</a></li>
+                </ul>
             </div>
         </div>
     </div>
@@ -691,9 +1017,12 @@
             if (tab === 'chat') {
                 document.querySelectorAll('.tab')[0].classList.add('active');
                 document.getElementById('chatTab').classList.add('active');
-            } else {
+            } else if (tab === 'settings') {
                 document.querySelectorAll('.tab')[1].classList.add('active');
                 document.getElementById('settingsTab').classList.add('active');
+            } else if (tab === 'help') {
+                document.querySelectorAll('.tab')[2].classList.add('active');
+                document.getElementById('helpTab').classList.add('active');
             }
         }
 
@@ -1012,7 +1341,7 @@
 
             isPushToTalkActive = true;
             pttButton.classList.add('active');
-            pttButton.textContent = 'Recording...';
+            pttButton.textContent = 'RECORDING...';
 
             ws.send(JSON.stringify({ type: 'input_audio_buffer.clear' }));
             startContinuousRecording();
@@ -1024,7 +1353,7 @@
 
             isPushToTalkActive = false;
             pttButton.classList.remove('active');
-            pttButton.textContent = 'Hold to Talk';
+            pttButton.textContent = 'PRESS AND HOLD TO SPEAK';
 
             if (ws && ws.readyState === WebSocket.OPEN) {
                 ws.send(JSON.stringify({ type: 'input_audio_buffer.commit' }));
@@ -1169,9 +1498,9 @@
         // iOS background audio support
         if ('mediaSession' in navigator) {
             navigator.mediaSession.metadata = new MediaMetadata({
-                title: 'OpenAI Voice Chat',
-                artist: 'Realtime API',
-                album: 'Voice Chat',
+                title: 'OpenAI Realtime API',
+                artist: 'Speech-to-Speech Console',
+                album: 'Voice Interface',
             });
         }
 
