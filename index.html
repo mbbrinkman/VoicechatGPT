@@ -1,0 +1,1220 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <meta name="apple-mobile-web-app-title" content="Voice Chat">
+    <title>OpenAI Realtime Voice Chat</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            color: #fff;
+            min-height: 100vh;
+            padding: env(safe-area-inset-top) env(safe-area-inset-right) env(safe-area-inset-bottom) env(safe-area-inset-left);
+            overflow-x: hidden;
+        }
+
+        .container {
+            max-width: 480px;
+            margin: 0 auto;
+            padding: 20px;
+        }
+
+        h1 {
+            text-align: center;
+            margin-bottom: 20px;
+            font-size: 24px;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .status {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            backdrop-filter: blur(10px);
+        }
+
+        .status-indicator {
+            display: inline-block;
+            width: 12px;
+            height: 12px;
+            border-radius: 50%;
+            margin-right: 8px;
+            animation: pulse 2s ease-in-out infinite;
+        }
+
+        .status-indicator.disconnected {
+            background: #e74c3c;
+        }
+
+        .status-indicator.connecting {
+            background: #f39c12;
+        }
+
+        .status-indicator.connected {
+            background: #2ecc71;
+        }
+
+        @keyframes pulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
+        }
+
+        .controls {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .control-group {
+            background: rgba(255,255,255,0.1);
+            padding: 15px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+        }
+
+        .control-group label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        input, select, textarea {
+            width: 100%;
+            padding: 12px;
+            border: none;
+            border-radius: 8px;
+            background: rgba(255,255,255,0.9);
+            color: #333;
+            font-size: 16px;
+            font-family: inherit;
+        }
+
+        textarea {
+            resize: vertical;
+            min-height: 80px;
+        }
+
+        .button-row {
+            display: flex;
+            gap: 10px;
+            flex-wrap: wrap;
+        }
+
+        button {
+            flex: 1;
+            min-width: 140px;
+            padding: 15px 20px;
+            border: none;
+            border-radius: 10px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            background: rgba(255,255,255,0.2);
+            color: #fff;
+            backdrop-filter: blur(10px);
+            touch-action: manipulation;
+        }
+
+        button:active {
+            transform: scale(0.95);
+        }
+
+        button:disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        .btn-primary {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+        }
+
+        .btn-success {
+            background: linear-gradient(135deg, #56ab2f 0%, #a8e063 100%);
+        }
+
+        .btn-danger {
+            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+        }
+
+        .btn-warning {
+            background: linear-gradient(135deg, #f2994a 0%, #f2c94c 100%);
+        }
+
+        .btn-info {
+            background: linear-gradient(135deg, #2193b0 0%, #6dd5ed 100%);
+        }
+
+        .ptt-button {
+            width: 100%;
+            height: 100px;
+            font-size: 20px;
+            margin: 20px 0;
+        }
+
+        .ptt-button.active {
+            background: linear-gradient(135deg, #eb3349 0%, #f45c43 100%);
+            box-shadow: 0 0 30px rgba(235, 51, 73, 0.8);
+        }
+
+        .settings-toggle {
+            width: 100%;
+            margin-bottom: 15px;
+        }
+
+        .settings-panel {
+            display: none;
+            background: rgba(255,255,255,0.1);
+            padding: 20px;
+            border-radius: 10px;
+            backdrop-filter: blur(10px);
+            margin-bottom: 20px;
+            max-height: 60vh;
+            overflow-y: auto;
+        }
+
+        .settings-panel.open {
+            display: block;
+        }
+
+        .settings-section {
+            margin-bottom: 20px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid rgba(255,255,255,0.2);
+        }
+
+        .settings-section:last-child {
+            border-bottom: none;
+        }
+
+        .settings-section h3 {
+            margin-bottom: 15px;
+            font-size: 16px;
+            color: #f2c94c;
+        }
+
+        .setting-item {
+            margin-bottom: 15px;
+        }
+
+        .setting-item label {
+            display: block;
+            margin-bottom: 5px;
+            font-size: 13px;
+            opacity: 0.9;
+        }
+
+        .setting-item input[type="range"] {
+            -webkit-appearance: none;
+            appearance: none;
+            background: rgba(255,255,255,0.3);
+            height: 6px;
+            border-radius: 3px;
+        }
+
+        .setting-item input[type="range"]::-webkit-slider-thumb {
+            -webkit-appearance: none;
+            appearance: none;
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #fff;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+        }
+
+        .setting-item input[type="range"]::-moz-range-thumb {
+            width: 20px;
+            height: 20px;
+            border-radius: 50%;
+            background: #fff;
+            cursor: pointer;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+            border: none;
+        }
+
+        .range-value {
+            display: inline-block;
+            margin-left: 10px;
+            font-weight: 600;
+            color: #f2c94c;
+        }
+
+        .checkbox-item {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+
+        .checkbox-item input[type="checkbox"] {
+            width: auto;
+            height: 20px;
+            accent-color: #667eea;
+        }
+
+        .video-container {
+            background: rgba(0,0,0,0.3);
+            border-radius: 10px;
+            overflow: hidden;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        video {
+            width: 100%;
+            display: block;
+        }
+
+        .video-controls {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            padding: 10px;
+            background: linear-gradient(to top, rgba(0,0,0,0.7), transparent);
+            display: flex;
+            gap: 10px;
+        }
+
+        .video-controls button {
+            flex: 1;
+            min-width: auto;
+            padding: 8px;
+            font-size: 14px;
+        }
+
+        .info-text {
+            font-size: 12px;
+            opacity: 0.8;
+            margin-top: 5px;
+        }
+
+        .hidden {
+            display: none !important;
+        }
+
+        @media (max-width: 400px) {
+            .container {
+                padding: 15px;
+            }
+
+            h1 {
+                font-size: 20px;
+            }
+
+            button {
+                min-width: 100px;
+                padding: 12px 15px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>OpenAI Realtime Voice Chat</h1>
+
+        <div class="status">
+            <span class="status-indicator disconnected" id="statusIndicator"></span>
+            <span id="statusText">Disconnected</span>
+        </div>
+
+        <div class="controls">
+            <div class="control-group">
+                <label for="apiKey">OpenAI API Key</label>
+                <input type="password" id="apiKey" placeholder="sk-...">
+                <div class="info-text">
+                    ⚠️ Security Warning: Your API key is stored in browser localStorage and sent directly to OpenAI.
+                    This is convenient for testing but NOT recommended for production.
+                    For production apps, generate ephemeral tokens from your server.
+                </div>
+            </div>
+
+            <button class="settings-toggle btn-info" onclick="toggleSettings()">
+                <span id="settingsToggleText">Show Settings</span>
+            </button>
+
+            <div class="settings-panel" id="settingsPanel">
+                <!-- Model & Voice Settings -->
+                <div class="settings-section">
+                    <h3>Model & Voice</h3>
+                    <div class="setting-item">
+                        <label for="model">Model</label>
+                        <select id="model">
+                            <option value="gpt-4o-realtime-preview">gpt-4o-realtime-preview</option>
+                            <option value="gpt-4o-realtime-preview-2024-10-01">gpt-4o-realtime-preview-2024-10-01</option>
+                            <option value="gpt-4o-realtime-preview-2024-12-17" selected>gpt-4o-realtime-preview-2024-12-17</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <label for="voice">Voice</label>
+                        <select id="voice">
+                            <option value="alloy">Alloy</option>
+                            <option value="ash">Ash</option>
+                            <option value="ballad">Ballad</option>
+                            <option value="coral">Coral</option>
+                            <option value="echo">Echo</option>
+                            <option value="sage">Sage</option>
+                            <option value="shimmer" selected>Shimmer</option>
+                            <option value="verse">Verse</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- System Instructions -->
+                <div class="settings-section">
+                    <h3>System Instructions</h3>
+                    <div class="setting-item">
+                        <label for="instructions">System Prompt</label>
+                        <textarea id="instructions" placeholder="You are a helpful assistant...">You are a helpful assistant. Be concise and friendly.</textarea>
+                    </div>
+                </div>
+
+                <!-- Audio Settings -->
+                <div class="settings-section">
+                    <h3>Audio Settings</h3>
+                    <div class="setting-item">
+                        <label for="inputAudioFormat">Input Audio Format</label>
+                        <select id="inputAudioFormat">
+                            <option value="pcm16" selected>PCM16 (24kHz, 16-bit)</option>
+                            <option value="g711_ulaw">G.711 μ-law</option>
+                            <option value="g711_alaw">G.711 A-law</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <label for="outputAudioFormat">Output Audio Format</label>
+                        <select id="outputAudioFormat">
+                            <option value="pcm16" selected>PCM16 (24kHz, 16-bit)</option>
+                            <option value="g711_ulaw">G.711 μ-law</option>
+                            <option value="g711_alaw">G.711 A-law</option>
+                        </select>
+                    </div>
+                </div>
+
+                <!-- Modalities -->
+                <div class="settings-section">
+                    <h3>Modalities</h3>
+                    <div class="setting-item checkbox-item">
+                        <input type="checkbox" id="modalityText" checked>
+                        <label for="modalityText">Text</label>
+                    </div>
+                    <div class="setting-item checkbox-item">
+                        <input type="checkbox" id="modalityAudio" checked>
+                        <label for="modalityAudio">Audio</label>
+                    </div>
+                </div>
+
+                <!-- Turn Detection -->
+                <div class="settings-section">
+                    <h3>Turn Detection</h3>
+                    <div class="setting-item">
+                        <label for="turnDetectionType">Type</label>
+                        <select id="turnDetectionType">
+                            <option value="server_vad" selected>Server VAD</option>
+                            <option value="none">None (Manual)</option>
+                        </select>
+                    </div>
+                    <div class="setting-item">
+                        <label for="vadThreshold">
+                            VAD Threshold: <span class="range-value" id="vadThresholdValue">0.5</span>
+                        </label>
+                        <input type="range" id="vadThreshold" min="0" max="1" step="0.05" value="0.5">
+                        <div class="info-text">Higher = less sensitive (0.0 - 1.0)</div>
+                    </div>
+                    <div class="setting-item">
+                        <label for="prefixPaddingMs">
+                            Prefix Padding: <span class="range-value" id="prefixPaddingMsValue">300</span>ms
+                        </label>
+                        <input type="range" id="prefixPaddingMs" min="0" max="1000" step="50" value="300">
+                        <div class="info-text">Audio before speech detection</div>
+                    </div>
+                    <div class="setting-item">
+                        <label for="silenceDurationMs">
+                            Silence Duration: <span class="range-value" id="silenceDurationMsValue">500</span>ms
+                        </label>
+                        <input type="range" id="silenceDurationMs" min="100" max="3000" step="100" value="500">
+                        <div class="info-text">Silence before turn ends</div>
+                    </div>
+                    <div class="setting-item checkbox-item">
+                        <input type="checkbox" id="createResponse" checked>
+                        <label for="createResponse">Auto-create Response</label>
+                    </div>
+                </div>
+
+                <!-- Response Generation -->
+                <div class="settings-section">
+                    <h3>Response Generation</h3>
+                    <div class="setting-item">
+                        <label for="temperature">
+                            Temperature: <span class="range-value" id="temperatureValue">0.8</span>
+                        </label>
+                        <input type="range" id="temperature" min="0.6" max="1.2" step="0.05" value="0.8">
+                        <div class="info-text">Randomness (0.6 - 1.2, default 0.8)</div>
+                    </div>
+                    <div class="setting-item">
+                        <label for="maxResponseTokens">
+                            Max Response Tokens: <span class="range-value" id="maxResponseTokensValue">4096</span>
+                        </label>
+                        <input type="range" id="maxResponseTokens" min="256" max="4096" step="256" value="4096">
+                        <div class="info-text">Maximum output length</div>
+                    </div>
+                </div>
+
+                <!-- Input Audio Transcription -->
+                <div class="settings-section">
+                    <h3>Input Audio Transcription</h3>
+                    <div class="setting-item checkbox-item">
+                        <input type="checkbox" id="enableTranscription">
+                        <label for="enableTranscription">Enable Transcription</label>
+                    </div>
+                    <div class="setting-item">
+                        <label for="transcriptionModel">Model</label>
+                        <input type="text" id="transcriptionModel" value="whisper-1" placeholder="whisper-1">
+                    </div>
+                </div>
+
+                <!-- Context & Truncation -->
+                <div class="settings-section">
+                    <h3>Context Management</h3>
+                    <div class="setting-item">
+                        <label for="maxTokens">
+                            Max Context Tokens: <span class="range-value" id="maxTokensValue">32768</span>
+                        </label>
+                        <input type="range" id="maxTokens" min="4096" max="128000" step="4096" value="32768">
+                        <div class="info-text">Maximum conversation context</div>
+                    </div>
+                </div>
+
+                <!-- Moderation & Safety -->
+                <div class="settings-section">
+                    <h3>Moderation & Safety</h3>
+                    <div class="info-text" style="margin-bottom: 15px;">
+                        Note: OpenAI Realtime API has built-in content moderation.
+                        For custom moderation, disable auto-response in Turn Detection
+                        and manually review transcripts before creating responses.
+                    </div>
+                    <div class="setting-item checkbox-item">
+                        <input type="checkbox" id="disableModeration">
+                        <label for="disableModeration">Manual Response Mode (for custom moderation)</label>
+                    </div>
+                    <div class="info-text">
+                        When enabled, responses won't auto-generate. Use Push-to-Talk
+                        and check console for transcripts before responding.
+                    </div>
+                </div>
+
+                <!-- Tool Choice (for future extensions) -->
+                <div class="settings-section">
+                    <h3>Advanced</h3>
+                    <div class="setting-item">
+                        <label for="toolChoice">Tool Choice</label>
+                        <select id="toolChoice">
+                            <option value="auto" selected>Auto</option>
+                            <option value="none">None</option>
+                            <option value="required">Required</option>
+                        </select>
+                    </div>
+                    <div class="setting-item checkbox-item">
+                        <input type="checkbox" id="enableDebugLog" checked>
+                        <label for="enableDebugLog">Enable Console Debug Logging</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Video Container -->
+            <div class="video-container" id="videoContainer" style="display: none;">
+                <video id="localVideo" autoplay playsinline muted></video>
+                <div class="video-controls">
+                    <button onclick="stopVideo()" class="btn-danger">Stop</button>
+                </div>
+            </div>
+
+            <!-- Connection Controls -->
+            <div class="button-row">
+                <button onclick="connect()" class="btn-success" id="connectBtn">Connect</button>
+                <button onclick="disconnect()" class="btn-danger" id="disconnectBtn" disabled>Disconnect</button>
+            </div>
+
+            <!-- Push to Talk Button -->
+            <button class="ptt-button btn-warning" id="pttButton" disabled
+                    onmousedown="startPushToTalk()"
+                    onmouseup="stopPushToTalk()"
+                    ontouchstart="startPushToTalk(event)"
+                    ontouchend="stopPushToTalk(event)">
+                Hold to Talk
+            </button>
+
+            <!-- Media Controls -->
+            <div class="button-row">
+                <button onclick="startCamera()" class="btn-info" id="cameraBtn">Camera</button>
+                <button onclick="startScreenShare()" class="btn-info" id="screenBtn">Screen</button>
+                <button onclick="interruptResponse()" class="btn-danger" id="interruptBtn" disabled>Interrupt</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Global state
+        let ws = null;
+        let audioContext = null;
+        let audioStream = null;
+        let mediaRecorder = null;
+        let isRecording = false;
+        let isPushToTalkActive = false;
+        let mediaStream = null;
+        let audioQueue = [];
+        let isPlaying = false;
+        let currentAudioSource = null;
+
+        // iOS Audio Context unlock
+        let audioContextUnlocked = false;
+
+        // DOM elements
+        const apiKeyInput = document.getElementById('apiKey');
+        const statusIndicator = document.getElementById('statusIndicator');
+        const statusText = document.getElementById('statusText');
+        const connectBtn = document.getElementById('connectBtn');
+        const disconnectBtn = document.getElementById('disconnectBtn');
+        const pttButton = document.getElementById('pttButton');
+        const interruptBtn = document.getElementById('interruptBtn');
+        const videoContainer = document.getElementById('videoContainer');
+        const localVideo = document.getElementById('localVideo');
+
+        // Load API key from localStorage
+        window.addEventListener('load', () => {
+            const savedKey = localStorage.getItem('openai_api_key');
+            if (savedKey) {
+                apiKeyInput.value = savedKey;
+            }
+
+            // Setup range input listeners
+            setupRangeInputs();
+
+            // Unlock audio on first touch (iOS requirement)
+            document.addEventListener('touchstart', unlockAudioContext, { once: true });
+            document.addEventListener('click', unlockAudioContext, { once: true });
+        });
+
+        // Save API key
+        apiKeyInput.addEventListener('change', () => {
+            localStorage.setItem('openai_api_key', apiKeyInput.value);
+        });
+
+        function unlockAudioContext() {
+            if (!audioContextUnlocked && audioContext) {
+                const buffer = audioContext.createBuffer(1, 1, 22050);
+                const source = audioContext.createBufferSource();
+                source.buffer = buffer;
+                source.connect(audioContext.destination);
+                source.start(0);
+                audioContextUnlocked = true;
+                debugLog('🔓 Audio context unlocked (iOS)');
+            }
+        }
+
+        function setupRangeInputs() {
+            const ranges = [
+                { id: 'vadThreshold', valueId: 'vadThresholdValue' },
+                { id: 'prefixPaddingMs', valueId: 'prefixPaddingMsValue' },
+                { id: 'silenceDurationMs', valueId: 'silenceDurationMsValue' },
+                { id: 'temperature', valueId: 'temperatureValue' },
+                { id: 'maxResponseTokens', valueId: 'maxResponseTokensValue' },
+                { id: 'maxTokens', valueId: 'maxTokensValue' }
+            ];
+
+            ranges.forEach(({ id, valueId }) => {
+                const input = document.getElementById(id);
+                const valueSpan = document.getElementById(valueId);
+                input.addEventListener('input', () => {
+                    valueSpan.textContent = input.value;
+                });
+            });
+        }
+
+        function toggleSettings() {
+            const panel = document.getElementById('settingsPanel');
+            const toggleText = document.getElementById('settingsToggleText');
+            panel.classList.toggle('open');
+            toggleText.textContent = panel.classList.contains('open') ? 'Hide Settings' : 'Show Settings';
+        }
+
+        function updateStatus(status, text) {
+            statusIndicator.className = `status-indicator ${status}`;
+            statusText.textContent = text;
+        }
+
+        function getSessionConfig() {
+            const modalities = [];
+            if (document.getElementById('modalityText').checked) modalities.push('text');
+            if (document.getElementById('modalityAudio').checked) modalities.push('audio');
+
+            const turnDetectionType = document.getElementById('turnDetectionType').value;
+            const disableModeration = document.getElementById('disableModeration').checked;
+
+            // If manual moderation mode is enabled, disable auto-response
+            const createResponse = disableModeration ? false : document.getElementById('createResponse').checked;
+
+            const turnDetection = turnDetectionType === 'none' ? null : {
+                type: turnDetectionType,
+                threshold: parseFloat(document.getElementById('vadThreshold').value),
+                prefix_padding_ms: parseInt(document.getElementById('prefixPaddingMs').value),
+                silence_duration_ms: parseInt(document.getElementById('silenceDurationMs').value),
+                create_response: createResponse
+            };
+
+            const config = {
+                modalities: modalities,
+                instructions: document.getElementById('instructions').value,
+                voice: document.getElementById('voice').value,
+                input_audio_format: document.getElementById('inputAudioFormat').value,
+                output_audio_format: document.getElementById('outputAudioFormat').value,
+                turn_detection: turnDetection,
+                temperature: parseFloat(document.getElementById('temperature').value),
+                max_response_output_tokens: parseInt(document.getElementById('maxResponseTokens').value),
+                tool_choice: document.getElementById('toolChoice').value
+            };
+
+            // Add transcription if enabled
+            if (document.getElementById('enableTranscription').checked) {
+                config.input_audio_transcription = {
+                    model: document.getElementById('transcriptionModel').value
+                };
+            }
+
+            return config;
+        }
+
+        // Helper for debug logging
+        function debugLog(...args) {
+            if (document.getElementById('enableDebugLog')?.checked) {
+                console.log(...args);
+            }
+        }
+
+        async function connect() {
+            const apiKey = apiKeyInput.value.trim();
+            if (!apiKey) {
+                alert('Please enter your OpenAI API key');
+                return;
+            }
+
+            try {
+                updateStatus('connecting', 'Connecting...');
+                connectBtn.disabled = true;
+
+                // Initialize audio context
+                if (!audioContext) {
+                    audioContext = new (window.AudioContext || window.webkitAudioContext)({
+                        sampleRate: 24000,
+                        latencyHint: 'interactive'
+                    });
+                }
+
+                // Resume audio context if suspended (iOS)
+                if (audioContext.state === 'suspended') {
+                    await audioContext.resume();
+                }
+
+                // Get microphone access
+                audioStream = await navigator.mediaDevices.getUserMedia({
+                    audio: {
+                        channelCount: 1,
+                        sampleRate: 24000,
+                        echoCancellation: true,
+                        noiseSuppression: true,
+                        autoGainControl: true
+                    }
+                });
+
+                // Connect to OpenAI Realtime API
+                // Browser WebSocket uses subprotocol for authentication
+                const model = document.getElementById('model').value;
+                const wsUrl = `wss://api.openai.com/v1/realtime?model=${model}`;
+
+                // Authentication via WebSocket subprotocol
+                // Format: ["realtime", "openai-insecure-api-key.YOUR_KEY"]
+                // Note: "insecure" here means the key is in the browser (client-side)
+                // For production, use ephemeral tokens from your server
+                const protocols = ["realtime", `openai-insecure-api-key.${apiKey}`, "openai-beta.realtime-v1"];
+
+                ws = new WebSocket(wsUrl, protocols);
+
+                ws.onopen = () => {
+                    console.log('✅ WebSocket connected');
+
+                    // Send session update with configuration
+                    const sessionConfig = getSessionConfig();
+                    debugLog('📤 Sending session config:', sessionConfig);
+
+                    ws.send(JSON.stringify({
+                        type: 'session.update',
+                        session: sessionConfig
+                    }));
+
+                    updateStatus('connected', 'Connected');
+                    connectBtn.disabled = true;
+                    disconnectBtn.disabled = false;
+                    pttButton.disabled = false;
+                    interruptBtn.disabled = false;
+
+                    // Start continuous audio streaming if not using push-to-talk
+                    if (document.getElementById('turnDetectionType').value !== 'none') {
+                        startContinuousRecording();
+                    }
+                };
+
+                ws.onmessage = async (event) => {
+                    try {
+                        const message = JSON.parse(event.data);
+                        debugLog('📨 Received:', message.type, message);
+
+                        switch (message.type) {
+                            // Session events
+                            case 'session.created':
+                            case 'session.updated':
+                                debugLog('✅ Session configured:', message.session);
+                                break;
+
+                            // Audio response events
+                            case 'response.audio.delta':
+                                if (message.delta) {
+                                    await playAudioDelta(message.delta);
+                                }
+                                break;
+
+                            case 'response.audio.done':
+                                debugLog('🔊 Audio response complete');
+                                break;
+
+                            case 'response.audio_transcript.delta':
+                                debugLog('📝 Transcript delta:', message.delta);
+                                break;
+
+                            case 'response.audio_transcript.done':
+                                console.log('📝 Assistant transcript:', message.transcript);
+                                break;
+
+                            // Input audio events
+                            case 'input_audio_buffer.committed':
+                                debugLog('✅ Audio buffer committed');
+                                break;
+
+                            case 'input_audio_buffer.cleared':
+                                debugLog('🧹 Audio buffer cleared');
+                                break;
+
+                            case 'input_audio_buffer.speech_started':
+                                debugLog('🎤 User started speaking');
+                                statusText.textContent = 'Listening...';
+                                break;
+
+                            case 'input_audio_buffer.speech_stopped':
+                                debugLog('🎤 User stopped speaking');
+                                statusText.textContent = 'Processing...';
+                                break;
+
+                            // Transcription events
+                            case 'conversation.item.input_audio_transcription.completed':
+                                console.log('📝 User said:', message.transcript);
+                                break;
+
+                            case 'conversation.item.input_audio_transcription.failed':
+                                console.warn('⚠️ Transcription failed:', message.error);
+                                break;
+
+                            // Response events
+                            case 'response.created':
+                                debugLog('💬 Response started');
+                                statusText.textContent = 'Responding...';
+                                break;
+
+                            case 'response.done':
+                                debugLog('✅ Response completed');
+                                statusText.textContent = 'Connected';
+                                break;
+
+                            case 'response.cancelled':
+                                debugLog('❌ Response cancelled');
+                                statusText.textContent = 'Connected';
+                                break;
+
+                            // Text response events
+                            case 'response.text.delta':
+                                debugLog('📝 Text delta:', message.delta);
+                                break;
+
+                            case 'response.text.done':
+                                console.log('📝 Assistant text:', message.text);
+                                break;
+
+                            // Conversation events
+                            case 'conversation.created':
+                                debugLog('💬 Conversation created:', message.conversation);
+                                break;
+
+                            case 'conversation.item.created':
+                                debugLog('➕ Item created:', message.item);
+                                break;
+
+                            case 'conversation.item.truncated':
+                                debugLog('✂️ Item truncated');
+                                break;
+
+                            case 'conversation.item.deleted':
+                                debugLog('🗑️ Item deleted');
+                                break;
+
+                            // Function calling events
+                            case 'response.function_call_arguments.delta':
+                                debugLog('⚙️ Function args delta:', message.delta);
+                                break;
+
+                            case 'response.function_call_arguments.done':
+                                console.log('⚙️ Function call:', message.arguments);
+                                break;
+
+                            // Rate limits
+                            case 'rate_limits.updated':
+                                debugLog('📊 Rate limits:', message.rate_limits);
+                                break;
+
+                            // Errors
+                            case 'error':
+                                console.error('❌ Error:', message.error);
+                                statusText.textContent = `Error: ${message.error.type}`;
+
+                                // Show user-friendly error
+                                let errorMsg = message.error.message || 'Unknown error';
+                                if (message.error.code === 'invalid_api_key') {
+                                    errorMsg = 'Invalid API key. Please check your OpenAI API key.';
+                                } else if (message.error.code === 'insufficient_quota') {
+                                    errorMsg = 'Insufficient quota. Please check your OpenAI account.';
+                                }
+                                alert(`Error: ${errorMsg}`);
+                                break;
+
+                            default:
+                                debugLog('ℹ️ Unhandled event:', message.type, message);
+                        }
+                    } catch (error) {
+                        console.error('❌ Error parsing message:', error, event.data);
+                    }
+                };
+
+                ws.onerror = (error) => {
+                    console.error('WebSocket error:', error);
+                    updateStatus('disconnected', 'Connection error');
+                };
+
+                ws.onclose = () => {
+                    console.log('WebSocket closed');
+                    disconnect();
+                };
+
+            } catch (error) {
+                console.error('Connection error:', error);
+                alert(`Connection failed: ${error.message}`);
+                updateStatus('disconnected', 'Connection failed');
+                connectBtn.disabled = false;
+            }
+        }
+
+        function disconnect() {
+            if (ws) {
+                ws.close();
+                ws = null;
+            }
+
+            if (mediaRecorder && mediaRecorder.state !== 'inactive') {
+                mediaRecorder.stop();
+            }
+
+            if (audioStream) {
+                audioStream.getTracks().forEach(track => track.stop());
+                audioStream = null;
+            }
+
+            updateStatus('disconnected', 'Disconnected');
+            connectBtn.disabled = false;
+            disconnectBtn.disabled = true;
+            pttButton.disabled = true;
+            interruptBtn.disabled = true;
+            isRecording = false;
+        }
+
+        async function startContinuousRecording() {
+            if (!audioStream || isRecording) return;
+
+            try {
+                const source = audioContext.createMediaStreamSource(audioStream);
+
+                // Use ScriptProcessor (deprecated but widely supported)
+                // TODO: Migrate to AudioWorklet for better performance
+                const processor = audioContext.createScriptProcessor(2048, 1, 1);
+
+                processor.onaudioprocess = (e) => {
+                    if (!ws || ws.readyState !== WebSocket.OPEN) return;
+
+                    const inputData = e.inputBuffer.getChannelData(0);
+
+                    // Resample to 24kHz if needed
+                    const pcm16 = floatTo16BitPCM(inputData);
+                    const base64Audio = arrayBufferToBase64(pcm16);
+
+                    try {
+                        ws.send(JSON.stringify({
+                            type: 'input_audio_buffer.append',
+                            audio: base64Audio
+                        }));
+                    } catch (error) {
+                        console.error('Error sending audio:', error);
+                    }
+                };
+
+                source.connect(processor);
+                processor.connect(audioContext.destination);
+                isRecording = true;
+
+                debugLog('✅ Continuous recording started');
+            } catch (error) {
+                console.error('❌ Error starting recording:', error);
+                alert('Failed to start recording: ' + error.message);
+            }
+        }
+
+        function startPushToTalk(event) {
+            if (event) event.preventDefault();
+            if (!ws || ws.readyState !== WebSocket.OPEN || isPushToTalkActive) return;
+
+            isPushToTalkActive = true;
+            pttButton.classList.add('active');
+            pttButton.textContent = 'Recording...';
+
+            debugLog('🎤 Push-to-talk started');
+
+            // Clear any existing audio buffer
+            ws.send(JSON.stringify({
+                type: 'input_audio_buffer.clear'
+            }));
+
+            // Start recording
+            startContinuousRecording();
+        }
+
+        function stopPushToTalk(event) {
+            if (event) event.preventDefault();
+            if (!isPushToTalkActive) return;
+
+            isPushToTalkActive = false;
+            pttButton.classList.remove('active');
+            pttButton.textContent = 'Hold to Talk';
+
+            debugLog('🎤 Push-to-talk stopped');
+
+            // Commit the audio buffer
+            if (ws && ws.readyState === WebSocket.OPEN) {
+                ws.send(JSON.stringify({
+                    type: 'input_audio_buffer.commit'
+                }));
+
+                // Create response
+                ws.send(JSON.stringify({
+                    type: 'response.create'
+                }));
+            }
+        }
+
+        function interruptResponse() {
+            if (!ws || ws.readyState !== WebSocket.OPEN) return;
+
+            // Stop current audio playback
+            if (currentAudioSource) {
+                currentAudioSource.stop();
+                currentAudioSource = null;
+            }
+            audioQueue = [];
+            isPlaying = false;
+
+            // Cancel current response
+            ws.send(JSON.stringify({
+                type: 'response.cancel'
+            }));
+
+            // Clear input audio buffer
+            ws.send(JSON.stringify({
+                type: 'input_audio_buffer.clear'
+            }));
+
+            console.log('⏹️ Response interrupted');
+        }
+
+        async function playAudioDelta(base64Audio) {
+            try {
+                const audioData = base64ToArrayBuffer(base64Audio);
+                const float32Data = pcm16ToFloat32(new Int16Array(audioData));
+
+                const audioBuffer = audioContext.createBuffer(1, float32Data.length, 24000);
+                audioBuffer.getChannelData(0).set(float32Data);
+
+                audioQueue.push(audioBuffer);
+
+                if (!isPlaying) {
+                    playNextInQueue();
+                }
+            } catch (error) {
+                console.error('Error playing audio:', error);
+            }
+        }
+
+        function playNextInQueue() {
+            if (audioQueue.length === 0) {
+                isPlaying = false;
+                return;
+            }
+
+            isPlaying = true;
+            const audioBuffer = audioQueue.shift();
+
+            const source = audioContext.createBufferSource();
+            source.buffer = audioBuffer;
+            source.connect(audioContext.destination);
+
+            source.onended = () => {
+                currentAudioSource = null;
+                playNextInQueue();
+            };
+
+            currentAudioSource = source;
+            source.start(0);
+        }
+
+        // Audio conversion utilities
+        function floatTo16BitPCM(float32Array) {
+            const buffer = new ArrayBuffer(float32Array.length * 2);
+            const view = new DataView(buffer);
+            let offset = 0;
+
+            for (let i = 0; i < float32Array.length; i++, offset += 2) {
+                const s = Math.max(-1, Math.min(1, float32Array[i]));
+                view.setInt16(offset, s < 0 ? s * 0x8000 : s * 0x7FFF, true);
+            }
+
+            return buffer;
+        }
+
+        function pcm16ToFloat32(int16Array) {
+            const float32Array = new Float32Array(int16Array.length);
+            for (let i = 0; i < int16Array.length; i++) {
+                float32Array[i] = int16Array[i] / (int16Array[i] < 0 ? 0x8000 : 0x7FFF);
+            }
+            return float32Array;
+        }
+
+        function arrayBufferToBase64(buffer) {
+            const bytes = new Uint8Array(buffer);
+            let binary = '';
+            for (let i = 0; i < bytes.byteLength; i++) {
+                binary += String.fromCharCode(bytes[i]);
+            }
+            return btoa(binary);
+        }
+
+        function base64ToArrayBuffer(base64) {
+            const binary = atob(base64);
+            const bytes = new Uint8Array(binary.length);
+            for (let i = 0; i < binary.length; i++) {
+                bytes[i] = binary.charCodeAt(i);
+            }
+            return bytes.buffer;
+        }
+
+        // Video/Screen sharing functions
+        async function startCamera() {
+            try {
+                mediaStream = await navigator.mediaDevices.getUserMedia({
+                    video: { facingMode: 'user', width: 1280, height: 720 },
+                    audio: false
+                });
+                localVideo.srcObject = mediaStream;
+                videoContainer.style.display = 'block';
+            } catch (error) {
+                console.error('Camera error:', error);
+                alert('Failed to access camera: ' + error.message);
+            }
+        }
+
+        async function startScreenShare() {
+            try {
+                mediaStream = await navigator.mediaDevices.getDisplayMedia({
+                    video: { width: 1920, height: 1080 },
+                    audio: false
+                });
+                localVideo.srcObject = mediaStream;
+                videoContainer.style.display = 'block';
+
+                // Handle when user stops sharing
+                mediaStream.getVideoTracks()[0].onended = () => {
+                    stopVideo();
+                };
+            } catch (error) {
+                console.error('Screen share error:', error);
+                alert('Failed to share screen: ' + error.message);
+            }
+        }
+
+        function stopVideo() {
+            if (mediaStream) {
+                mediaStream.getTracks().forEach(track => track.stop());
+                mediaStream = null;
+            }
+            localVideo.srcObject = null;
+            videoContainer.style.display = 'none';
+        }
+
+        // iOS background audio support
+        if ('mediaSession' in navigator) {
+            navigator.mediaSession.metadata = new MediaMetadata({
+                title: 'OpenAI Voice Chat',
+                artist: 'Realtime API',
+                album: 'Voice Chat',
+            });
+        }
+
+        // Prevent sleep on iOS
+        let wakeLock = null;
+        async function requestWakeLock() {
+            try {
+                if ('wakeLock' in navigator) {
+                    wakeLock = await navigator.wakeLock.request('screen');
+                    console.log('Wake lock acquired');
+                }
+            } catch (err) {
+                console.error('Wake lock error:', err);
+            }
+        }
+
+        // Request wake lock when connecting
+        document.getElementById('connectBtn').addEventListener('click', requestWakeLock);
+
+        // Handle visibility change
+        document.addEventListener('visibilitychange', async () => {
+            if (wakeLock !== null && document.visibilityState === 'visible') {
+                await requestWakeLock();
+            }
+        });
+    </script>
+</body>
+</html>
